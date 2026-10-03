@@ -31,12 +31,10 @@ Raw files are cached for about 5 minutes, so a new run can take a few minutes to
 
 ### Sample data
 
-Add `?sample` to any URL (for example `forecast.html?sample`) to use the made-up data in `sample/`
-instead. Every page then shows a **Sample data** badge. To refresh it so "this weekend" has data:
-
-```bash
-node sample/generate.mjs
-```
+Add `?sample` to any URL (for example `forecast.html?sample`) to see the pages with made-up data:
+the site list in `sample/sites.csv` and forecasts generated in the browser by `assets/js/sample.js`,
+relative to today, so this weekend always has runs. Past runs never change from day to day, like
+the real log. Every page shows a **Sample data** badge while it's on.
 
 ## Running locally
 

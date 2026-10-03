@@ -35,6 +35,5 @@ exclude:
   - CLAUDE.md
   - Gemfile
   - Gemfile.lock
-  - sample/generate.mjs
   - tests
   - vendor

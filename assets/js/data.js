@@ -8,7 +8,8 @@ const SAMPLE_BASE = "/sample/";
 const REQUIRED = ["lat", "lon", "dir_ranges", "speed_min", "speed_max", "gust_max",
   "rain_mm_max", "fly_start", "fly_end", "min_hours"];
 
-// ?sample in the URL switches to the bundled sample data. Never silent: pages show a badge.
+// ?sample in the URL switches to sample data: the bundled site list and generated forecasts.
+// Never silent: pages show a badge.
 export const isSample = typeof location !== "undefined" && new URLSearchParams(location.search).has("sample");
 const BASE = isSample ? SAMPLE_BASE : LIVE_BASE;
 
@@ -82,8 +83,17 @@ export async function loadSites() {
   });
 }
 
-/** Load forecast rows for the given "YYYY-MM" months. Missing months are skipped. */
+/**
+ * Load forecast rows for the given "YYYY-MM" months (by issued date). Missing months are skipped.
+ * In ?sample mode the rows are generated for the forecast sites, relative to today (sample.js).
+ */
 export async function loadForecasts(months) {
+  if (isSample) {
+    const [{ sampleRows }, sites] = await Promise.all([import("./sample.js"), loadSites()]);
+    const wanted = new Set(months);
+    return sampleRows(sites.filter((s) => s.active).map((s) => s.id), localToday())
+      .filter((r) => wanted.has(monthOf(r.issued)));
+  }
   const texts = await Promise.all(months.map((m) => fetchText(`data/forecasts/${m}.csv`)));
   const rows = [];
   for (const t of texts) {

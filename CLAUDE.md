@@ -59,8 +59,9 @@ fly_start,fly_end,min_hours,skip,notes`. A row is forecast only when all criteri
 and `skip` is not `yes`. Source, verification and access details are currently free text in `notes`;
 there are no dedicated columns for them yet.
 
-`?sample` on any page switches to the made-up data in `sample/` (regenerate with
-`node sample/generate.mjs`) and shows a "Sample data" badge. Never fall back to sample data silently.
+`?sample` on any page switches to made-up data: `sample/sites.csv` plus forecasts generated in the
+browser by `assets/js/sample.js`, relative to today (deterministic; past runs never change). It shows a
+"Sample data" badge. Never fall back to sample data silently.
 
 The site never needs credentials: everything it reads is public. Never put service account keys or
 any write-capable credential in this repo.
