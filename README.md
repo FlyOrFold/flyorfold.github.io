@@ -3,7 +3,10 @@
 The Fly or Fold website: a paragliding weekend planner that shows how the chance of a flyable day
 at each site changes run by run as the weekend gets closer.
 
-Plain HTML, CSS and JavaScript. No build step and no dependencies. GitHub Pages serves the repo as is.
+A GitHub Pages Jekyll site (the `github-pages` gem: Jekyll 3 plus GitHub's allowed plugins
+`jekyll-feed`, `jekyll-seo-tag` and `jekyll-sitemap`). GitHub builds it on every push to `main`.
+Layouts and shared markup are in `_layouts/` and `_includes/`; the forecast charts are plain JavaScript
+modules in `assets/js/` that run in the browser.
 
 ## Pages
 
@@ -12,7 +15,7 @@ Plain HTML, CSS and JavaScript. No build step and no dependencies. GitHub Pages 
 | `index.html` | Landing page: this weekend's outlook per site from the latest run, how it works, latest news |
 | `forecast.html` | Timeline for one site and weekend (`?site=<id>&weekend=YYYY-MM-DD`), the 14-day outlook, and the site's limits |
 | `sites.html` | Every row of the site list, with limits, sources and whether it is forecast |
-| `news.html` | All news items |
+| `news.html` | All news items (posts), with an RSS feed at `/news/feed.xml` |
 | `brand.html` | Logo, color tokens, type and voice rules |
 
 ## Where the data comes from
@@ -37,23 +40,37 @@ node sample/generate.mjs
 
 ## Running locally
 
-Pages use ES modules and `fetch`, so open them through a local server, not as files:
+Needs Ruby 3.x and Bundler. Once:
 
 ```bash
-python3 -m http.server 8000
+bundle config set --local path vendor/bundle
 ```
 
-Then go to <http://localhost:8000/>.
+```bash
+bundle install
+```
+
+Then serve with live reload at <http://localhost:4000/>:
+
+```bash
+LANG=en_US.UTF-8 bundle exec jekyll serve --livereload
+```
+
+(`LANG` avoids a Sass encoding error in the older Jekyll that GitHub Pages pins.)
 
 ## Posting news
 
-Add an object to the top of `news.json` and commit:
+News items are Jekyll posts. Add a file named `_posts/YYYY-MM-DD-short-slug.md`:
 
-```json
-{ "date": "2026-10-10", "text": "Added Hyner View.", "link": { "href": "sites.html#hyner-view", "label": "See the site" } }
+```markdown
+---
+title: Added Hyner View
+---
+Hyner View (PA) is now in the forecast log. See the [site page](/sites.html#hyner-view).
 ```
 
-`link` is optional. Keep items to a sentence or two. Text is shown as plain text (no Markdown or HTML).
+Keep it to a sentence or two. Markdown works. The home page shows the latest three, `news.html`
+shows all of them, and each gets its own page and a feed entry.
 
 ## Brand
 

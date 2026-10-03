@@ -2,7 +2,7 @@
 // Schema: see that repo's README ("Data"). Adding columns at the end is safe; renames are not.
 
 const LIVE_BASE = "https://raw.githubusercontent.com/FlyOrFold/forecast-log/main/";
-const SAMPLE_BASE = "sample/";
+const SAMPLE_BASE = "/sample/";
 
 // Columns a sites.csv row needs before forecast-log scores it (mirrors forecast_log/sites.py).
 const REQUIRED = ["lat", "lon", "dir_ranges", "speed_min", "speed_max", "gust_max",

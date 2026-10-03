@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'en' }}">
+<head>
+{% include head.html %}
+</head>
+<body{% if page.body_class %} class="{{ page.body_class }}"{% endif %}>
+{% include header.html %}
+{{ content }}
+{% include footer.html %}
+{%- for script in page.scripts %}
+<script type="module" src="{{ script | relative_url }}"></script>
+{%- endfor %}
+<script type="module" src="{{ '/assets/js/common.js' | relative_url }}"></script>
+</body>
+</html>

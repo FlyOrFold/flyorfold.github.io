@@ -1,75 +1,65 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fly or Fold</title>
-<meta name="description" content="Paragliding weekend planner: how the chance of a flyable day changes as the weekend gets closer.">
-<meta name="theme-color" content="#10233a">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="manifest" href="site.webmanifest">
-<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
-<link rel="stylesheet" href="assets/css/site.css">
-</head>
-<body>
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="index.html"><img src="assets/img/logo.svg" alt="" width="32" height="32"><span>Fly <span class="or">or</span> Fold</span></a>
-    <nav class="nav" aria-label="Main">
-      <a href="index.html" aria-current="page">Home</a>
-      <a href="forecast.html">Forecast</a>
-      <a href="sites.html">Sites</a>
-      <a href="news.html">News</a>
-    </nav>
-    <button class="theme-toggle" type="button" aria-label="Switch theme"></button>
-  </div>
-</header>
-<main class="wrap">
-  <div class="hero">
+---
+title: Fly or Fold
+body_class: home
+scripts:
+  - /assets/js/home.js
+---
+<section class="sky-hero">
+  <svg class="glider" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
+    <g class="glider-lines">
+      <path d="M11 34 60 74M30 20 60 74M60 15V74M90 20 60 74M109 34 60 74"/>
+    </g>
+    <path class="glider-canopy" d="M5 31C22 5 98 5 115 31L108 36C90 15 30 15 12 36Z"/>
+    <circle class="glider-pilot" cx="60" cy="77" r="4.5"/>
+  </svg>
+
+  <div class="wrap hero-inner">
+    <p class="eyebrow">Paragliding weekend planner · central Ohio and beyond</p>
     <h1>Is the weekend worth the drive?</h1>
-    <p class="lede">Fly or Fold tracks the chance of a flyable day at paragliding sites within a long drive of central Ohio, and shows how that chance moves as the weekend gets closer. A forecast that firms up over the week is one you can plan around. One that flips around is a reason to wait.</p>
+    <p class="lede">See the chance of a flyable day at sites within a long drive of central Ohio, and how it moves as the weekend gets closer. A forecast that firms up is one to plan around. One that keeps flipping is a reason to wait.</p>
     <div class="cta">
-      <a class="btn" href="forecast.html">See the forecast timeline</a>
-      <a class="btn secondary" href="sites.html">Browse sites</a>
+      <a class="btn" href="{{ '/forecast.html' | relative_url }}">See the forecast timeline</a>
+      <a class="btn on-sky" href="{{ '/sites.html' | relative_url }}">Browse sites</a>
     </div>
   </div>
 
-  <section aria-labelledby="outlook-h">
+  <svg class="ridge" viewBox="0 0 1440 140" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path class="ridge-far" d="M0 90C120 60 220 40 330 55 430 68 520 30 640 22 760 14 860 58 980 62 1100 66 1180 38 1290 34 1360 32 1410 48 1440 56V140H0Z"/>
+    <path class="ridge-near" d="M0 108C160 94 260 70 400 80 540 90 620 106 760 96 900 86 1000 68 1140 78 1280 88 1360 100 1440 94V140H0Z"/>
+    <path class="ridge-ground" d="M0 128C300 117 600 124 900 120 1150 116 1300 122 1440 119V140H0Z"/>
+  </svg>
+</section>
+
+<main class="wrap home-main">
+  <section class="card outlook-panel" aria-labelledby="outlook-h">
     <div class="section-head">
       <h2 id="outlook-h">This weekend</h2>
       <span class="muted small" id="outlook-meta"></span>
     </div>
     <div id="outlook" class="grid" aria-live="polite"><p class="muted">Loading forecasts…</p></div>
-    <p class="notice" style="margin-top:12px"><strong>Chance of a flyable day</strong> is the share of forecast ensemble members where the site's wind, gust and rain limits hold for long enough inside its flying window. It covers a model grid cell about 25 km across, not the launch. Check live conditions and make your own call on the day.</p>
+    <p class="panel-note"><strong>Chance of a flyable day</strong> is the share of forecast ensemble members where the site's wind, gust and rain limits hold for long enough inside its flying window. The small line shows every run so far for that day. It covers a model grid cell about 25 km across, not the launch. Check live conditions and make your own call on the day.</p>
   </section>
 
   <section aria-labelledby="how-h">
     <h2 id="how-h">How it works</h2>
-    <div class="grid">
-      <div class="card"><h3>Every morning</h3><p class="small muted" style="margin:0">A scheduled job pulls the GFS ensemble forecast from Open-Meteo for every site, 14 days ahead.</p></div>
-      <div class="card"><h3>Scored per site</h3><p class="small muted" style="margin:0">Each ensemble member is checked hour by hour against the site's wind direction, speed, gust and rain limits.</p></div>
-      <div class="card"><h3>Logged, not overwritten</h3><p class="small muted" style="margin:0">Every run is kept, so you can watch a weekend's chances change, and later check how good the forecasts were.</p></div>
-    </div>
+    <ol class="steps">
+      <li><span class="step-n" aria-hidden="true">1</span><div><h3>Every morning</h3><p>A scheduled job pulls the GFS ensemble forecast from Open-Meteo for every site, 14 days ahead.</p></div></li>
+      <li><span class="step-n" aria-hidden="true">2</span><div><h3>Scored per site</h3><p>Each ensemble member is checked hour by hour against the site's wind direction, speed, gust and rain limits.</p></div></li>
+      <li><span class="step-n" aria-hidden="true">3</span><div><h3>Logged, not overwritten</h3><p>Every run is kept, so you can watch a weekend's chances change, and later check how good the forecasts were.</p></div></li>
+    </ol>
   </section>
 
   <section aria-labelledby="news-h">
     <div class="section-head">
       <h2 id="news-h">News</h2>
-      <a href="news.html">All news</a>
+      <a href="{{ '/news.html' | relative_url }}">All news</a>
     </div>
-    <ul class="news-list" id="news"></ul>
+    <ul class="news-list">
+      {%- for post in site.posts limit: 3 %}
+      {% include news-item.html post=post %}
+      {%- else %}
+      <li class="news-item muted">No news yet.</li>
+      {%- endfor %}
+    </ul>
   </section>
 </main>
-<footer class="site-footer">
-  <div class="wrap">
-    <p><strong>Planning aid only.</strong> Forecasts are for a weather-model grid cell (about 25 km across), not the launch itself. Check live conditions on site and make your own call before flying.</p>
-    <p>Weather data by <a href="https://open-meteo.com/">Open-Meteo.com</a>, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Daily forecast log: <a href="https://github.com/FlyOrFold/forecast-log">FlyOrFold/forecast-log</a>.</p>
-    <p><a href="brand.html">Brand and colors</a> · <a href="https://github.com/FlyOrFold/flyorfold.github.io">Site source</a></p>
-  </div>
-</footer>
-<script type="module" src="assets/js/home.js"></script>
-<script type="module" src="assets/js/common.js"></script>
-</body>
-</html>

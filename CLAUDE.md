@@ -85,12 +85,18 @@ any write-capable credential in this repo.
 
 ## Stack and workflow
 
-- Plain HTML, CSS and JavaScript (ES modules), no build step and no dependencies. Keep it that way
-  unless the owner asks otherwise. `.nojekyll` turns off Jekyll.
-- Header and footer markup is repeated in each page; change all five pages together.
-- Local dev: `python3 -m http.server 8000` (also in `.claude/launch.json`).
-- Deploy: GitHub Pages from `main`, repo root. **TODO: confirm in the repo's Pages settings.**
+- **GitHub Pages Jekyll** (`github-pages` gem, Jekyll 3.10). Only use plugins GitHub Pages allows;
+  currently `jekyll-feed`, `jekyll-seo-tag`, `jekyll-sitemap`. No GitHub Actions build, no theme
+  (`theme: null`); the site has its own layouts and CSS.
+- `_layouts/default.html` wraps every page; `_includes/` holds head, header, footer and the news item.
+  Nav entries are in `_data/nav.yml`. Pages list their JS modules in front matter (`scripts:`).
+- Use `relative_url` for internal links in templates. Pages stay at `*.html` URLs; only posts use the
+  `/news/:year/:month/:day/:title/` permalink.
+- News = `_posts/YYYY-MM-DD-slug.md`, short Markdown, `title` in front matter.
+- Forecast data is fetched client-side by plain ES modules in `assets/js/` (no bundler).
+- Local dev: `LANG=en_US.UTF-8 bundle exec jekyll serve --livereload` (also in `.claude/launch.json`).
+  Gems install to `vendor/bundle` (git-ignored, excluded from the build).
+- Deploy: GitHub Pages builds from `main`, repo root.
 - Brand tokens are CSS custom properties at the top of `assets/css/site.css`, documented on
   `brand.html`. Chart series colors (Sky, Canopy) were validated for color-blind separation in both
   themes; re-validate if they change.
-- News is `news.json` (plain text items, newest first by date).

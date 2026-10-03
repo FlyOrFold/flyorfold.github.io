@@ -1,0 +1,36 @@
+# Fly or Fold — GitHub Pages (github-pages gem: Jekyll 3 + the GitHub-whitelisted plugins).
+title: Fly or Fold
+description: >-
+  Paragliding weekend planner: how the chance of a flyable day changes as the weekend gets closer.
+url: https://flyorfold.github.io
+baseurl: ""
+lang: en
+
+# No GitHub Pages theme: the site has its own layouts and CSS.
+theme: null
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+markdown: kramdown
+timezone: America/New_York
+
+# News items are posts: _posts/YYYY-MM-DD-slug.md (URL pattern set under defaults).
+feed:
+  path: news/feed.xml
+
+defaults:
+  - scope: { path: "" }
+    values: { layout: default }
+  - scope: { path: "", type: posts }
+    values: { layout: post, permalink: "/news/:year/:month/:day/:title/" }
+
+exclude:
+  - README.md
+  - CLAUDE.md
+  - Gemfile
+  - Gemfile.lock
+  - sample/generate.mjs
+  - vendor

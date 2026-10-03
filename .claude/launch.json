@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "site",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8000"],
-      "port": 8000
+      "name": "jekyll",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["LANG=en_US.UTF-8", "LC_ALL=en_US.UTF-8", "bundle", "exec", "jekyll", "serve", "--port", "4000", "--livereload"],
+      "port": 4000
     }
   ]
 }

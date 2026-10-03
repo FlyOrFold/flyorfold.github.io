@@ -1,0 +1,15 @@
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="{{ '/' | relative_url }}"><img src="{{ '/assets/img/logo.svg' | relative_url }}" alt="" width="32" height="32"><span>Fly <span class="or">or</span> Fold</span></a>
+    <nav class="nav" aria-label="Main">
+      {%- for item in site.data.nav %}
+        {%- assign current = false %}
+        {%- if page.url == item.url %}{% assign current = true %}{% endif %}
+        {%- if item.url == "/" and page.url == "/index.html" %}{% assign current = true %}{% endif %}
+        {%- if item.url == "/news.html" and page.collection == "posts" %}{% assign current = true %}{% endif %}
+      <a href="{{ item.url | relative_url }}"{% if current %} aria-current="page"{% endif %}>{{ item.title }}</a>
+      {%- endfor %}
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch theme"></button>
+  </div>
+</header>

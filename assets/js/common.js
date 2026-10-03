@@ -1,5 +1,5 @@
-// Shared page behavior: theme toggle, sample-data badge, news rendering, small DOM helpers.
-import { isSample, longDate } from "./data.js";
+// Shared page behavior: theme toggle, sample-data badge, small DOM helpers.
+import { isSample } from "./data.js";
 
 /** Create an element. Text content is always set with textContent, never innerHTML. */
 export function el(tag, attrs = {}, ...children) {
@@ -52,34 +52,10 @@ function setupSampleMode() {
   if (!isSample) return;
   for (const a of document.querySelectorAll("a[href]")) {
     const href = a.getAttribute("href");
-    if (/^[a-z]+\.html/.test(href)) a.setAttribute("href", withSample(href));
+    if (/^\/?([a-z]+\.html)?$/.test(href)) a.setAttribute("href", withSample(href));
   }
   const header = document.querySelector(".site-header .brand");
   header?.after(el("span", { class: "badge sample", title: "Showing made-up sample data, not real forecasts" }, "Sample data"));
-}
-
-export async function loadNews() {
-  const res = await fetch("news.json", { cache: "no-cache" });
-  if (!res.ok) throw new Error(`news.json: HTTP ${res.status}`);
-  const items = await res.json();
-  return items.slice().sort((a, b) => (a.date < b.date ? 1 : -1));
-}
-
-/** Render news items. Links are only allowed to http(s) or relative URLs. */
-export function renderNews(list, items) {
-  list.replaceChildren();
-  if (!items.length) {
-    list.append(el("li", { class: "news-item muted" }, "No news yet."));
-    return;
-  }
-  for (const item of items) {
-    const p = el("p", {}, item.text);
-    if (item.link?.href && /^(https?:\/\/|[a-z0-9_-]+\.html)/i.test(item.link.href)) {
-      p.append(" ", el("a", { href: item.link.href }, item.link.label || "More"));
-    }
-    list.append(el("li", { class: "news-item" },
-      el("time", { datetime: item.date }, longDate(item.date)), p));
-  }
 }
 
 setupTheme();

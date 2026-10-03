@@ -1,31 +1,9 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Forecast timeline · Fly or Fold</title>
-<meta name="description" content="How the chance of a flyable Saturday and Sunday changed with each daily forecast run.">
-<meta name="theme-color" content="#10233a">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="manifest" href="site.webmanifest">
-<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
-<link rel="stylesheet" href="assets/css/site.css">
-</head>
-<body>
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="index.html"><img src="assets/img/logo.svg" alt="" width="32" height="32"><span>Fly <span class="or">or</span> Fold</span></a>
-    <nav class="nav" aria-label="Main">
-      <a href="index.html">Home</a>
-      <a href="forecast.html" aria-current="page">Forecast</a>
-      <a href="sites.html">Sites</a>
-      <a href="news.html">News</a>
-    </nav>
-    <button class="theme-toggle" type="button" aria-label="Switch theme"></button>
-  </div>
-</header>
+---
+title: Forecast timeline
+description: How the chance of a flyable Saturday and Sunday changed with each daily forecast run.
+scripts:
+  - /assets/js/forecast.js
+---
 <main class="wrap">
   <h1>Forecast timeline</h1>
   <p class="muted">How the chance of a flyable Saturday and Sunday changed with each daily run, as the weekend got closer.</p>
@@ -69,14 +47,3 @@
     <div id="rules"></div>
   </section>
 </main>
-<footer class="site-footer">
-  <div class="wrap">
-    <p><strong>Planning aid only.</strong> Forecasts are for a weather-model grid cell (about 25 km across), not the launch itself. Check live conditions on site and make your own call before flying.</p>
-    <p>Weather data by <a href="https://open-meteo.com/">Open-Meteo.com</a>, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Daily forecast log: <a href="https://github.com/FlyOrFold/forecast-log">FlyOrFold/forecast-log</a>.</p>
-    <p><a href="brand.html">Brand and colors</a> · <a href="https://github.com/FlyOrFold/flyorfold.github.io">Site source</a></p>
-  </div>
-</footer>
-<script type="module" src="assets/js/forecast.js"></script>
-<script type="module" src="assets/js/common.js"></script>
-</body>
-</html>
