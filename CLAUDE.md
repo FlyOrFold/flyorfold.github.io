@@ -107,6 +107,12 @@ any write-capable credential in this repo.
   `light-dark(light, dark)`. Never add a `prefers-color-scheme` block or a `[data-theme]` copy of a
   rule; add or change a token instead. For a non-colour that differs by theme, key off
   `:root[data-scheme="dark"]` (the theme in use, kept current by `common.js`).
+- `site.css` is ordered tokens, base, layout, sky scene, components, then one section per page.
+  Some later rules deliberately override earlier ones at equal specificity (comments mark them),
+  so put new rules in the section they belong to rather than at the end of the file.
+- Sky band sizes (`--band-top`, `--ridge-h`, `--ridge-clear`, `--panel-overlap`, `--glider-w`) live
+  together at the top of the sky scene section, with phone values in one media query. Change them
+  there; never hard-code a ridge height, hero padding or panel overlap elsewhere.
 - Brand tokens are documented on the Brand page. `brand.html` is a live style
   guide: swatch values are read from the CSS at runtime, and `_data/brand.yml` only names and
   explains each token. Add new tokens there so they show up. Chart series colors (Sky, Canopy) were validated for color-blind separation in both

@@ -1,6 +1,15 @@
 /* Fly or Fold — site styles. Brand tokens are documented on brand.html.
+
+   Order: tokens, base, layout, sky scene, components, then page-specific sections.
+   Later sections may rely on overriding earlier ones at equal specificity (e.g. .raised-panel
+   and .outlook-card after .card), so keep new rules in the section they belong to.
+
    Every colour is light-dark(light value, dark value). The theme follows the system setting,
    and the header button pins it via data-theme on <html>, which only switches color-scheme. */
+
+/* ==========================================================================
+   Tokens
+   ========================================================================== */
 
 :root {
   color-scheme: light dark;
@@ -53,6 +62,10 @@
 :root[data-theme="light"] { color-scheme: light; }
 :root[data-theme="dark"] { color-scheme: dark; }
 
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
@@ -76,7 +89,28 @@ h2 { font-size: 1.3rem; }
 h3 { font-size: 1.05rem; }
 p { margin: 0 0 1em; }
 
+.muted { color: var(--muted); }
+.small { font-size: .875rem; }
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
+main.wrap { padding-bottom: 56px; }
+section { margin-top: 32px; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.section-head a { font-size: .95rem; }
+.grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+/* Card comes before every panel or card variant that overrides its padding or background. */
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px;
+}
 
 /* Header */
 .site-header {
@@ -99,13 +133,106 @@ p { margin: 0 0 1em; }
   width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: grid; place-items: center;
 }
 .theme-toggle svg { width: 18px; height: 18px; }
-
 @media (max-width: 560px) {
   .nav { order: 3; width: 100%; margin: 0 0 8px; justify-content: space-between; }
   .theme-toggle { margin-left: auto; }
 }
 
-main.wrap { padding-bottom: 56px; }
+/* Footer */
+.site-footer { border-top: 1px solid var(--line); padding: 24px 0 40px; color: var(--muted); font-size: .85rem; }
+.site-footer p { margin: 0 0 .6em; }
+.site-footer a { color: var(--text-2); }
+
+/* ==========================================================================
+   Sky scene: gradient band, ridgeline, glider, and the panel that overlaps it
+   ========================================================================== */
+
+/* Geometry. These numbers depend on each other, so they all live here.
+     --band-top       space above the band's text
+     --ridge-h        height of the ridgeline at the bottom of the band
+     --ridge-clear    space kept free below the band's text; the ridge sits in it
+     --panel-overlap  how far a .raised-panel pulls up over the ridge. Keep it below the
+                      smallest --ridge-h (76px on phones) so panels start inside the ridge.
+     --glider-w       glider width; on phones the home eyebrow stops short of it
+   .sky-hero is the full home hero, .sky-compact the short band on every other page. */
+:root { --panel-overlap: 64px; --glider-w: 132px; }
+.sky-hero { --band-top: 40px; --ridge-h: 170px; --ridge-clear: 150px; }
+.sky-compact { --band-top: 22px; --ridge-h: 120px; --ridge-clear: 104px; }
+@media (max-width: 640px) {
+  :root { --panel-overlap: 40px; --glider-w: 76px; }
+  .sky-hero { --ridge-h: 90px; --ridge-clear: 92px; }
+  .sky-compact { --ridge-h: 76px; --ridge-clear: 76px; }
+}
+
+body.sky .site-header { background: var(--sky-top); border-bottom-color: transparent; }
+body.sky .nav a { color: var(--text); }
+body.sky .nav a:hover,
+body.sky .nav a[aria-current="page"] { background: var(--on-sky-btn); }
+body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, transparent); color: var(--text); }
+
+.sky-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 60% at 75% 100%, var(--sky-glow), transparent 60%),
+    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-low) 100%);
+  margin-top: 0;
+  padding: var(--band-top) 0 0;
+}
+.hero-inner { position: relative; z-index: 1; padding-bottom: var(--ridge-clear); }
+.hero-inner h1 { font-size: clamp(2.1rem, 7vw, 3.4rem); letter-spacing: -0.025em; max-width: 12em; margin-bottom: .35em; }
+.hero-inner .lede { font-size: clamp(1rem, 2.6vw, 1.15rem); color: var(--text-2); max-width: 34em; }
+.eyebrow {
+  font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-2); margin-bottom: 10px;
+}
+
+.glider {
+  position: absolute; z-index: 0; width: var(--glider-w); right: max(16px, calc(50% - 470px)); top: 28px;
+  transform: rotate(-7deg);
+  animation: glide 9s ease-in-out infinite;
+}
+.glider-canopy { fill: var(--canopy); }
+.glider-lines { stroke: var(--glider-line); stroke-width: 1.2; stroke-linecap: round; fill: none; }
+.glider-pilot { fill: var(--text); }
+@keyframes glide {
+  0%, 100% { transform: translate(0, 0) rotate(-7deg); }
+  50% { transform: translate(-10px, 8px) rotate(-4deg); }
+}
+@media (prefers-reduced-motion: reduce) { .glider { animation: none; } }
+
+.ridge { position: absolute; left: 0; bottom: -1px; width: 100%; height: var(--ridge-h); display: block; }
+.ridge-far { fill: var(--ridge-far); }
+.ridge-near { fill: var(--ridge-near); }
+.ridge-ground { fill: var(--bg); }
+
+@media (max-width: 640px) {
+  .glider { top: 14px; right: 12px; opacity: .9; }
+  .hero-inner h1 { max-width: 9.5em; }
+  .eyebrow { max-width: calc(100% - var(--glider-w) - 8px); }
+}
+
+/* Compact band: typography and the controls that sit in it */
+.sky-compact .hero-inner h1 { font-size: clamp(1.7rem, 5.5vw, 2.5rem); max-width: none; margin-bottom: .2em; }
+.sky-compact .eyebrow { margin-bottom: 6px; }
+.sky-compact .eyebrow a { color: inherit; }
+.sky-compact .controls { margin: 12px 0 0; }
+.sky-compact .field { color: var(--text); font-weight: 600; }
+@media (max-width: 640px) { .sky-compact .eyebrow { max-width: none; } }
+
+/* The first panel under a band, pulled up over the ridge. After .card, before page panels. */
+.raised-panel {
+  position: relative; z-index: 1; margin-top: calc(-1 * var(--panel-overlap)); padding: 18px;
+  box-shadow: 0 12px 32px rgb(16 35 58 / .12);
+}
+.raised-panel .section-head h2 { margin-bottom: 4px; }
+.raised-panel .grid { margin-top: 10px; }
+@media (max-width: 640px) { .raised-panel { padding: 14px; } }
+.panel-note { font-size: .82rem; color: var(--muted); margin: 14px 2px 0; }
+
+/* ==========================================================================
+   Components
+   ========================================================================== */
 
 /* Buttons */
 .cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
@@ -114,29 +241,61 @@ main.wrap { padding-bottom: 56px; }
   background: var(--accent); color: var(--on-accent); text-decoration: none; font-weight: 600; border: 1px solid var(--accent);
 }
 .btn.secondary { background: transparent; color: var(--text); border-color: var(--line); }
+.btn.on-sky { background: var(--on-sky-btn); color: var(--text); border-color: color-mix(in srgb, var(--text) 20%, transparent); }
+.btn.small-btn { padding: 6px 12px; font-size: .9rem; }
+.link-btn { all: unset; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; font-size: .9rem; }
+.link-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
 
-/* Cards and sections */
-section { margin-top: 32px; }
-.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.section-head a { font-size: .95rem; }
-.card {
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px;
-}
-.grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-.muted { color: var(--muted); }
-.small { font-size: .875rem; }
+/* Empty state (also used on a .card, so after it) */
+.empty { padding: 32px 16px; text-align: center; color: var(--muted); }
 
+/* Notice */
 .notice {
   border-left: 3px solid var(--canopy); background: var(--surface); padding: 12px 14px;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0; color: var(--text-2); font-size: .925rem;
 }
 .notice strong { color: var(--text); }
 
-/* Weekend outlook cards */
-.outlook-card h3 { margin-bottom: 2px; }
-.outlook-card h3 a { color: var(--text); text-decoration: none; }
-.outlook-card h3 a:hover { text-decoration: underline; }
-.days { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+/* Status badges: always icon + text */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px; font-size: .78rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap;
+}
+.badge.ok { color: var(--ridge); }
+.badge.warn { color: var(--caution); }
+.badge.off { color: var(--muted); }
+.badge.sample { color: var(--canopy); }
+
+/* Topic labels and filter chips */
+.topic-chip {
+  display: inline-block; font-size: .72rem; font-weight: 600; padding: 1px 8px; border-radius: 999px;
+  background: var(--surface-2); color: var(--text-2); border: 1px solid var(--line); text-decoration: none;
+}
+a.topic-chip:hover { border-color: var(--text-2); }
+.topic-filter { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 18px; }
+.chip {
+  font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; padding: 5px 12px; border-radius: 999px;
+  background: var(--surface-2); color: var(--text-2); border: 1px solid var(--line);
+}
+.chip:hover { border-color: var(--text-2); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+/* Forms */
+.controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; margin: 8px 0 16px; }
+.field { display: grid; gap: 4px; font-size: .85rem; color: var(--text-2); min-width: 0; flex: 1 1 180px; }
+select {
+  font: inherit; font-size: 1rem; color: var(--text); background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 10px; width: 100%;
+}
+
+/* Tables and disclosure */
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; font-size: .8rem; }
+td.num { font-variant-numeric: tabular-nums; text-align: right; }
+th.num { text-align: right; }
+details > summary { cursor: pointer; color: var(--link); font-size: .9rem; padding: 8px; }
 
 /* Day tile (day-tile.js): compact on the home outlook, large on the forecast summary */
 .day-tile { background: var(--surface-2); border-radius: var(--radius-sm); }
@@ -157,25 +316,58 @@ section { margin-top: 32px; }
 .day-tile.large .value { font-size: clamp(2rem, 8vw, 2.8rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; margin: 4px 0 2px; }
 .day-tile.large .detail { font-size: .82rem; color: var(--muted); }
 
-/* Status badges: always icon + text */
-.badge {
-  display: inline-flex; align-items: center; gap: 4px; font-size: .78rem; font-weight: 600;
-  padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap;
+/* News timeline (news page, home page, Brand page) */
+.tl-month { font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); margin: 0 0 12px; }
+.tl-month-group + .tl-month-group { margin-top: 8px; }
+.timeline { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; }
+.timeline::before {
+  content: ""; position: absolute; left: 7px; top: 8px; bottom: 18px; width: 2px;
+  background: var(--line); border-radius: 1px;
 }
-.badge.ok { color: var(--ridge); }
-.badge.warn { color: var(--caution); }
-.badge.off { color: var(--muted); }
-.badge.sample { color: var(--canopy); }
+.tl-item { position: relative; padding-bottom: 20px; }
+.tl-item::before {
+  content: ""; position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--canopy); box-shadow: 0 0 0 3px var(--surface);
+}
+.tl-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tl-meta time { font-size: .8rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tl-item h3 { font-size: 1.05rem; margin: 2px 0 4px; }
+.tl-item h3 a { color: var(--text); text-decoration: none; }
+.tl-item h3 a:hover { text-decoration: underline; }
+.tl-body { color: var(--text-2); font-size: .95rem; }
+.tl-body p { margin: 0 0 .5em; }
+.tl-body > :last-child { margin-bottom: 0; }
 
-/* Forms */
-.controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; margin: 8px 0 16px; }
-.field { display: grid; gap: 4px; font-size: .85rem; color: var(--text-2); min-width: 0; flex: 1 1 180px; }
-select {
-  font: inherit; font-size: 1rem; color: var(--text); background: var(--surface);
-  border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 10px; width: 100%;
+/* ==========================================================================
+   Home page
+   ========================================================================== */
+
+/* Weekend outlook cards (after .card: they override its background and padding) */
+.outlook-card { background: var(--bg); border-color: transparent; padding: 14px; }
+.outlook-card h3 { margin-bottom: 2px; }
+.outlook-card h3 a { color: var(--text); text-decoration: none; }
+.outlook-card h3 a:hover { text-decoration: underline; }
+.days { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+
+/* How it works */
+.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.steps li { display: flex; gap: 12px; align-items: flex-start; }
+.steps h3 { margin: 2px 0 4px; }
+.steps p { margin: 0; font-size: .9rem; color: var(--text-2); }
+.step-n {
+  flex: 0 0 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--canopy); color: #fff; font-weight: 700; font-size: .95rem;
 }
 
-/* Chart */
+/* ==========================================================================
+   Forecast page
+   ========================================================================== */
+
+.summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.chart-head h2 { font-size: 1.05rem; margin-bottom: 2px; }
+.chart-head p { margin-bottom: 8px; }
+
+/* Timeline chart (chart.js) */
 .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .875rem; color: var(--text-2); padding: 0 8px 8px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend i { width: 18px; height: 2px; border-radius: 1px; display: inline-block; }
@@ -193,16 +385,9 @@ select {
 .tooltip .tt-row i { width: 12px; height: 2px; border-radius: 1px; display: inline-block; }
 .tooltip .tt-row b { font-variant-numeric: tabular-nums; min-width: 3.2em; }
 .tooltip .tt-row span { color: var(--text-2); }
-.empty { padding: 32px 16px; text-align: center; color: var(--muted); }
-
-/* Tables */
-.table-wrap { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; font-size: .9rem; }
-th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
-th { color: var(--muted); font-weight: 600; font-size: .8rem; }
-td.num { font-variant-numeric: tabular-nums; text-align: right; }
-th.num { text-align: right; }
-details > summary { cursor: pointer; color: var(--link); font-size: .9rem; padding: 8px; }
+.raised-panel .legend { padding: 0 0 8px; }
+.raised-panel .chart { margin: 0 -6px; }
+.raised-panel details > summary { padding: 8px 0; }
 
 /* 14-day calendar (Mon–Sun columns) */
 .cal { display: grid; gap: 3px; }
@@ -228,11 +413,10 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .scale .ramp { height: 8px; flex: 0 1 140px; border-radius: 4px; }
 .scale-note { margin-left: auto; }
 
-/* Sites */
-.visually-hidden {
-  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
-}
+/* ==========================================================================
+   Sites page (site cards also appear on the forecast page)
+   ========================================================================== */
+
 .site-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); }
 .site-card { display: flex; flex-direction: column; gap: 10px; }
 .site-card h3, .site-card h2 { margin: 0; font-size: 1.15rem; }
@@ -249,7 +433,6 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .limits dd.unset { font-weight: 400; color: var(--muted); font-style: italic; }
 .site-notes { font-size: .85rem; color: var(--text-2); border-top: 1px solid var(--line); padding-top: 10px; margin: 0; }
 .site-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: auto; font-size: .9rem; }
-.btn.small-btn { padding: 6px 12px; font-size: .9rem; }
 @media (max-width: 420px) {
   .site-body { gap: 12px; }
   .dial { flex-basis: 88px; }
@@ -273,7 +456,7 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 @keyframes flash { 0%, 30% { box-shadow: 0 0 0 3px var(--canopy); } 100% { box-shadow: 0 0 0 3px transparent; } }
 @media (prefers-reduced-motion: reduce) { .flash { animation: none; box-shadow: 0 0 0 3px var(--canopy); } }
 
-/* Map */
+/* Map (Leaflet). Selectors on .site-map.leaflet-container outrank Leaflet's own CSS, which loads later. */
 .site-map { height: 340px; border-radius: var(--radius-sm); overflow: hidden; background: var(--surface-2); position: relative; z-index: 0; }
 @media (max-width: 640px) { .site-map { height: 280px; } }
 .site-map .leaflet-container, .site-map.leaflet-container { font: inherit; background: var(--surface-2); }
@@ -288,167 +471,28 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .site-map .leaflet-bar a:hover { background: var(--surface-2); }
 .site-map.leaflet-container .leaflet-control-attribution { background: color-mix(in srgb, var(--surface) 85%, transparent); color: var(--text-2); }
 .site-map.leaflet-container .leaflet-control-attribution a { color: var(--link); }
+/* Dark map tiles: invert the light OSM tiles rather than load a second tile set.
+   data-scheme is the theme in use, set by the head script and boot.js. */
+:root[data-scheme="dark"] .site-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); }
+
 .map-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .82rem; color: var(--text-2); margin: 10px 2px 0; }
 .map-legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .pin-key { width: 12px; height: 12px; border-radius: 50%; display: inline-block; background: var(--surface); border: 2px solid var(--muted); }
 .pin-key.active { background: var(--sky); border-color: var(--sky); }
 .pin-key.home { background: var(--canopy); border-color: var(--canopy); }
 
+/* Starting point for distances */
 .home-controls { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px; display: grid; gap: 8px; }
 .home-status { font-weight: 600; }
 .home-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .home-actions select { width: auto; flex: 0 1 220px; padding: 6px 10px; font-size: .9rem; }
 .home-note { margin: 0; }
-.link-btn { all: unset; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; font-size: .9rem; }
-.link-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
 
-/* Dark map tiles: invert the light OSM tiles rather than load a second tile set.
-   data-scheme is the theme in use, set by the head script and common.js. */
-:root[data-scheme="dark"] .site-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); }
+/* ==========================================================================
+   News page and posts (panels after .raised-panel: they override its padding)
+   ========================================================================== */
 
-/* Footer */
-.site-footer { border-top: 1px solid var(--line); padding: 24px 0 40px; color: var(--muted); font-size: .85rem; }
-.site-footer p { margin: 0 0 .6em; }
-.site-footer a { color: var(--text-2); }
-
-@media (forced-colors: active) {
-  .day-tile .key, .legend i, .tooltip .tt-row i { forced-color-adjust: none; }
-}
-
-/* ---------- Home: sky and ridge hero ---------- */
-
-body.sky .site-header { background: var(--sky-top); border-bottom-color: transparent; }
-body.sky .nav a { color: var(--text); }
-body.sky .nav a:hover,
-body.sky .nav a[aria-current="page"] { background: var(--on-sky-btn); }
-body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, transparent); color: var(--text); }
-
-.sky-hero {
-  position: relative;
-  overflow: hidden;
-  background:
-    radial-gradient(120% 60% at 75% 100%, var(--sky-glow), transparent 60%),
-    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-low) 100%);
-  margin-top: 0;
-  padding: 40px 0 0;
-}
-.hero-inner { position: relative; z-index: 1; padding-bottom: 150px; }
-.hero-inner h1 { font-size: clamp(2.1rem, 7vw, 3.4rem); letter-spacing: -0.025em; max-width: 12em; margin-bottom: .35em; }
-.hero-inner .lede { font-size: clamp(1rem, 2.6vw, 1.15rem); color: var(--text-2); max-width: 34em; }
-.eyebrow {
-  font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--text-2); margin-bottom: 10px;
-}
-.btn.on-sky { background: var(--on-sky-btn); color: var(--text); border-color: color-mix(in srgb, var(--text) 20%, transparent); }
-
-.glider {
-  position: absolute; z-index: 0; width: 132px; right: max(16px, calc(50% - 470px)); top: 28px;
-  transform: rotate(-7deg);
-  animation: glide 9s ease-in-out infinite;
-}
-.glider-canopy { fill: var(--canopy); }
-.glider-lines { stroke: var(--glider-line); stroke-width: 1.2; stroke-linecap: round; fill: none; }
-.glider-pilot { fill: var(--text); }
-@keyframes glide {
-  0%, 100% { transform: translate(0, 0) rotate(-7deg); }
-  50% { transform: translate(-10px, 8px) rotate(-4deg); }
-}
-@media (prefers-reduced-motion: reduce) { .glider { animation: none; } }
-@media (max-width: 640px) {
-  .glider { width: 76px; top: 14px; right: 12px; opacity: .9; }
-  .hero-inner { padding-bottom: 92px; }
-  .hero-inner h1 { max-width: 9.5em; }
-  .eyebrow { max-width: calc(100% - 84px); }
-}
-
-.ridge { position: absolute; left: 0; bottom: -1px; width: 100%; height: 170px; display: block; }
-.ridge-far { fill: var(--ridge-far); }
-.ridge-near { fill: var(--ridge-near); }
-.ridge-ground { fill: var(--bg); }
-@media (max-width: 640px) { .ridge { height: 90px; } }
-
-.raised-panel {
-  position: relative; z-index: 1; margin-top: -64px; padding: 18px;
-  box-shadow: 0 12px 32px rgb(16 35 58 / .12);
-}
-.raised-panel .section-head h2 { margin-bottom: 4px; }
-.raised-panel .grid { margin-top: 10px; }
-.outlook-card { background: var(--bg); border-color: transparent; padding: 14px; }
-.panel-note { font-size: .82rem; color: var(--muted); margin: 14px 2px 0; }
-@media (max-width: 640px) { .raised-panel { margin-top: -40px; padding: 14px; } }
-
-
-/* How it works */
-.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-.steps li { display: flex; gap: 12px; align-items: flex-start; }
-.steps h3 { margin: 2px 0 4px; }
-.steps p { margin: 0; font-size: .9rem; color: var(--text-2); }
-.step-n {
-  flex: 0 0 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--canopy); color: #fff; font-weight: 700; font-size: .95rem;
-}
-
-/* ---------- Compact sky band (forecast page) ---------- */
-.sky-compact { padding-top: 22px; }
-.sky-compact .hero-inner { padding-bottom: 104px; }
-.sky-compact .hero-inner h1 { font-size: clamp(1.7rem, 5.5vw, 2.5rem); max-width: none; margin-bottom: .2em; }
-.sky-compact .eyebrow { margin-bottom: 6px; }
-.sky-compact .controls { margin: 12px 0 0; }
-.sky-compact .field { color: var(--text); font-weight: 600; }
-.sky-compact .ridge { height: 120px; }
-@media (max-width: 640px) {
-  .sky-compact .hero-inner { padding-bottom: 76px; }
-  .sky-compact .ridge { height: 76px; }
-  .sky-compact .eyebrow { max-width: none; }
-}
-
-/* Summary tiles above the chart */
-.summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
-.chart-head h2 { font-size: 1.05rem; margin-bottom: 2px; }
-.chart-head p { margin-bottom: 8px; }
-.raised-panel .legend { padding: 0 0 8px; }
-.raised-panel .chart { margin: 0 -6px; }
-.raised-panel details > summary { padding: 8px 0; }
-
-/* ---------- News timeline ---------- */
 .news-panel { padding: 20px 20px 4px; }
-.tl-month { font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); margin: 0 0 12px; }
-.tl-month-group + .tl-month-group { margin-top: 8px; }
-.timeline { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; }
-.timeline::before {
-  content: ""; position: absolute; left: 7px; top: 8px; bottom: 18px; width: 2px;
-  background: var(--line); border-radius: 1px;
-}
-.tl-item { position: relative; padding-bottom: 20px; }
-.tl-item::before {
-  content: ""; position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%;
-  background: var(--canopy); box-shadow: 0 0 0 3px var(--surface);
-}
-.tl-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.tl-meta time { font-size: .8rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
-.tl-item h3 { font-size: 1.05rem; margin: 2px 0 4px; }
-.tl-item h3 a { color: var(--text); text-decoration: none; }
-.tl-item h3 a:hover { text-decoration: underline; }
-.tl-body { color: var(--text-2); font-size: .95rem; }
-.tl-body p { margin: 0 0 .5em; }
-.tl-body > :last-child { margin-bottom: 0; }
-
-.topic-chip {
-  display: inline-block; font-size: .72rem; font-weight: 600; padding: 1px 8px; border-radius: 999px;
-  background: var(--surface-2); color: var(--text-2); border: 1px solid var(--line); text-decoration: none;
-}
-a.topic-chip:hover { border-color: var(--text-2); }
-
-.topic-filter { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 18px; }
-.chip {
-  font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; padding: 5px 12px; border-radius: 999px;
-  background: var(--surface-2); color: var(--text-2); border: 1px solid var(--line);
-}
-.chip:hover { border-color: var(--text-2); }
-.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-
-/* Single post */
-.sky-compact .eyebrow a { color: inherit; }
 .post-body { padding: 22px; font-size: 1.05rem; }
 .post-body > :last-child { margin-bottom: 0; }
 .post-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0 8px; }
@@ -459,7 +503,10 @@ a.topic-chip:hover { border-color: var(--text-2); }
 .post-nav-link:hover { border-color: var(--text-2); }
 .post-nav-link.next { text-align: right; grid-column: 2; }
 
-/* ---------- Brand page ---------- */
+/* ==========================================================================
+   Brand page (after the components it shows, which it adjusts)
+   ========================================================================== */
+
 .or-light { font-weight: 400; color: var(--text-2); }
 .brand-toc { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
 .brand-toc a {
@@ -468,7 +515,7 @@ a.topic-chip:hover { border-color: var(--text-2); }
 }
 .brand-toc a:hover { border-color: var(--text-2); }
 .brand-main section[id] { scroll-margin-top: 72px; }
-.brand-main h3 { margin-top: 18px; }
+.brand-main h3 { margin-top: 18px; } /* before .component h3 and .voice-grid h3, which reset it */
 
 .logo-row { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); margin: 12px 0 4px; }
 .logo-tile {
@@ -500,10 +547,10 @@ a.topic-chip:hover { border-color: var(--text-2); }
 .swatch .hex { font-weight: 600; color: var(--text); }
 .swatch .use { color: var(--muted); margin-top: 3px; line-height: 1.35; }
 
+/* Mini sky scene: a .sky-hero, so these come after the sky rules they override */
 .scene-demo { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); margin: 12px 0; }
-.scene-mini { margin: 0; padding: 0; height: 230px; position: relative; }
+.scene-mini { --ridge-h: 90px; margin: 0; padding: 0; height: 230px; position: relative; }
 .scene-mini .glider { width: 84px; top: 16px; }
-.scene-mini .ridge { height: 90px; }
 .scene-labels { position: absolute; left: 14px; top: 14px; bottom: 58px; display: flex; flex-direction: column; justify-content: space-between; font-size: .75rem; font-weight: 600; color: var(--text-2); }
 
 .type-specimen p { margin-bottom: .6em; }
@@ -517,22 +564,33 @@ a.topic-chip:hover { border-color: var(--text-2); }
 .component > .small { margin: 10px 0 0; }
 .demo-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .demo-row + .demo-row { margin-top: 10px; }
-.on-sky-demo { padding: 12px; border-radius: var(--radius-sm); margin-top: 10px; }
+.on-sky-demo { padding: 12px; border-radius: var(--radius-sm); margin-top: 10px; } /* also a .sky-hero */
+.demo-tiles { display: grid; gap: 10px; }
 .component .timeline { padding-top: 2px; }
 .component .tl-item { padding-bottom: 4px; }
 .component .tl-item h3 { margin: 2px 0 2px; font-size: 1rem; }
-.pin-demo { flex-direction: column; gap: 6px; margin: 0; }
+.pin-demo { flex-direction: column; gap: 6px; margin: 0; } /* also a .map-legend */
 #demo-dial { flex: 0 0 auto; }
 
 .voice-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
 .voice-grid h3 { margin-top: 0; }
 .voice-grid ul { margin: 0; padding-left: 1.1em; }
-.demo-tiles { display: grid; gap: 10px; }
 
-/* ---------- Contact page ---------- */
+/* ==========================================================================
+   Contact page
+   ========================================================================== */
+
 .contact-email { font-size: clamp(1.3rem, 5vw, 1.7rem); font-weight: 700; margin: 0 0 6px; overflow-wrap: anywhere; }
 .contact-email a { text-decoration-thickness: 2px; }
 .contact-panel .muted { margin: 0; }
 .contact-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
 .contact-grid h3 { margin-top: 0; }
 .contact-grid p { margin: 0; font-size: .92rem; color: var(--text-2); }
+
+/* ==========================================================================
+   Accessibility modes
+   ========================================================================== */
+
+@media (forced-colors: active) {
+  .day-tile .key, .legend i, .tooltip .tt-row i { forced-color-adjust: none; }
+}
