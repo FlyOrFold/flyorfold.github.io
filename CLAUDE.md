@@ -100,3 +100,7 @@ any write-capable credential in this repo.
 - Brand tokens are CSS custom properties at the top of `assets/css/site.css`, documented on
   `brand.html`. Chart series colors (Sky, Canopy) were validated for color-blind separation in both
   themes; re-validate if they change.
+- The Sites map uses Leaflet 1.9.4 from cdnjs with SRI hashes, and OpenStreetMap tiles (credit
+  line required). It is the only third-party script; keep the integrity hashes if you upgrade it.
+- A viewer can set a starting point for distances (`assets/js/location.js`). It lives only in
+  that browser's localStorage, rounded to 0.1°, and must never go into a URL, a request, or the repo.

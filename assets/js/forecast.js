@@ -6,6 +6,7 @@ import {
 import { el } from "./common.js";
 import { renderTimeline, timelineTable } from "./chart.js";
 import { siteCard } from "./site-card.js";
+import { distanceLabel, getHome } from "./location.js";
 
 const $ = (id) => document.getElementById(id);
 const siteSel = $("site"), weekendSel = $("weekend");
@@ -143,7 +144,7 @@ function render() {
     $("table-details").hidden = false;
   }
   renderStrip(site, sat);
-  $("rules").replaceChildren(siteCard(site));
+  $("rules").replaceChildren(siteCard(site, { distance: distanceLabel(getHome(), site) }));
 }
 
 async function init() {

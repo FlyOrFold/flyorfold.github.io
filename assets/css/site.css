@@ -76,6 +76,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html { -webkit-text-size-adjust: 100%; }
 
@@ -251,15 +252,84 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .scale-note { margin-left: auto; }
 
 /* Sites */
-.site-card h3 { margin-bottom: 4px; }
-.site-card .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-.site-card dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0 0 10px; font-size: .9rem; }
-.site-card dt { color: var(--muted); }
-.site-card dd { margin: 0; }
-.site-body { display: flex; gap: 16px; align-items: flex-start; }
-.site-body .dial { flex: 0 0 96px; }
-.site-body .dial svg { width: 96px; height: 96px; display: block; }
-.site-notes { font-size: .875rem; color: var(--text-2); border-top: 1px solid var(--line); padding-top: 8px; margin: 0; }
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.site-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); }
+.site-card { display: flex; flex-direction: column; gap: 10px; }
+.site-card h3, .site-card h2 { margin: 0; font-size: 1.15rem; }
+.meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.distance { font-size: .82rem; color: var(--text-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+.site-body { display: flex; gap: 18px; align-items: center; }
+.dial { flex: 0 0 112px; }
+.dial .dial-svg { width: 112px; height: 112px; display: block; }
+.dial.small { flex-basis: 64px; }
+.dial.small .dial-svg { width: 64px; height: 64px; }
+.limits { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; margin: 0; font-size: .92rem; flex: 1; min-width: 0; }
+.limits dt { color: var(--muted); }
+.limits dd { margin: 0; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.limits dd.unset { font-weight: 400; color: var(--muted); font-style: italic; }
+.site-notes { font-size: .85rem; color: var(--text-2); border-top: 1px solid var(--line); padding-top: 10px; margin: 0; }
+.site-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: auto; font-size: .9rem; }
+.btn.small-btn { padding: 6px 12px; font-size: .9rem; }
+@media (max-width: 420px) {
+  .site-body { gap: 12px; }
+  .dial { flex-basis: 88px; }
+  .dial .dial-svg { width: 88px; height: 88px; }
+  .limits { font-size: .85rem; gap: 4px 10px; }
+}
+
+.site-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); }
+.site-row {
+  display: flex; gap: 14px; align-items: flex-start; background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; font-size: .9rem;
+}
+.site-row h3 { margin: 0 0 4px; font-size: 1rem; }
+.site-row .meta { margin-bottom: 6px; }
+.site-row-body { min-width: 0; flex: 1; }
+.site-row-notes summary { padding: 2px 0; font-size: .85rem; }
+.site-row-notes p { margin: 4px 0 6px; color: var(--text-2); font-size: .85rem; }
+
+.site-card:focus, .site-row:focus { outline: none; }
+.flash { animation: flash 1.6s ease-out; }
+@keyframes flash { 0%, 30% { box-shadow: 0 0 0 3px var(--canopy); } 100% { box-shadow: 0 0 0 3px transparent; } }
+@media (prefers-reduced-motion: reduce) { .flash { animation: none; box-shadow: 0 0 0 3px var(--canopy); } }
+
+/* Map */
+.site-map { height: 340px; border-radius: var(--radius-sm); overflow: hidden; background: var(--surface-2); position: relative; z-index: 0; }
+@media (max-width: 640px) { .site-map { height: 280px; } }
+.site-map .leaflet-container, .site-map.leaflet-container { font: inherit; background: var(--surface-2); }
+.pin { fill: var(--surface); stroke: var(--muted); fill-opacity: 1; }
+.pin-active { fill: var(--sky); stroke: var(--surface); }
+.pin-home { fill: var(--canopy); stroke: var(--surface); }
+.leaflet-tooltip { background: var(--surface); color: var(--text); border-color: var(--line); font-size: .82rem; font-weight: 600; }
+.leaflet-tooltip-top::before { border-top-color: var(--surface); }
+.leaflet-control-attribution { font-size: 10px; }
+.site-map .leaflet-bar { border-color: var(--line); }
+.site-map .leaflet-bar a { background: var(--surface); color: var(--text); border-bottom-color: var(--line); }
+.site-map .leaflet-bar a:hover { background: var(--surface-2); }
+.site-map.leaflet-container .leaflet-control-attribution { background: color-mix(in srgb, var(--surface) 85%, transparent); color: var(--text-2); }
+.site-map.leaflet-container .leaflet-control-attribution a { color: var(--link); }
+.map-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .82rem; color: var(--text-2); margin: 10px 2px 0; }
+.map-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.pin-key { width: 12px; height: 12px; border-radius: 50%; display: inline-block; background: var(--surface); border: 2px solid var(--muted); }
+.pin-key.active { background: var(--sky); border-color: var(--sky); }
+.pin-key.home { background: var(--canopy); border-color: var(--canopy); }
+
+.home-controls { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px; display: grid; gap: 8px; }
+.home-status { font-weight: 600; }
+.home-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.home-actions select { width: auto; flex: 0 1 220px; padding: 6px 10px; font-size: .9rem; }
+.home-note { margin: 0; }
+.link-btn { all: unset; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; font-size: .9rem; }
+.link-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+/* Dark map tiles: invert the light OSM tiles rather than load a second tile set. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .site-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); }
+}
+:root[data-theme="dark"] .site-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); }
 
 /* Brand page */
 .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }

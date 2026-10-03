@@ -1,15 +1,62 @@
 ---
 title: Sites
 description: Paragliding sites in the Fly or Fold forecast log, with wind limits and their sources.
+body_class: sky
 scripts:
   - /assets/js/sites.js
 ---
-<main class="wrap">
-  <h1>Sites</h1>
-  <p class="muted">Every site in the forecast log, with the limits used to score it. These come from the <a href="https://github.com/FlyOrFold/forecast-log/blob/main/sites.csv">site list</a> in the forecast-log repo.</p>
-  <p class="notice"><strong>None of these limits are verified with the site's club yet.</strong> They are working assumptions, with sources in each site's notes. Many sites need club membership, a waiver, or a club contact before a first visit. Check with the club that runs the site, not this page.</p>
-  <div class="controls" style="margin-top:16px">
-    <span class="small muted">Wind directions are where the wind blows <em>from</em>. Speeds in mph, rain in mm per hour, hours in site-local time.</span>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+      integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="
+      crossorigin="anonymous" referrerpolicy="no-referrer">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
+        integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+
+<section class="sky-hero sky-compact">
+  <div class="wrap hero-inner">
+    <p class="eyebrow">Sites</p>
+    <h1>Where we forecast</h1>
+    <p class="lede" id="sites-count">&nbsp;</p>
   </div>
-  <div id="sites" class="grid" aria-live="polite"><p class="muted">Loading sites…</p></div>
+  {% include ridge.html %}
+</section>
+
+<main class="wrap sky-main">
+  <section class="card raised-panel" aria-labelledby="map-h">
+    <h2 id="map-h" class="visually-hidden">Map of sites</h2>
+    <div id="map" class="site-map" role="region" aria-label="Map of sites"></div>
+    <div class="map-legend" aria-hidden="true">
+      <span><i class="pin-key active"></i>Forecast daily</span>
+      <span><i class="pin-key"></i>Not forecast yet</span>
+      <span id="home-key" hidden><i class="pin-key home"></i><span id="home-key-label">You</span></span>
+    </div>
+    <div class="home-controls" id="home-controls">
+      <span class="home-status" id="home-status">Set a starting point to see distances.</span>
+      <div class="home-actions">
+        <button type="button" class="btn small-btn" id="use-location">Use my location</button>
+        <label class="visually-hidden" for="preset">Or pick a city</label>
+        <select id="preset"><option value="">Or pick a city…</option></select>
+        <button type="button" class="link-btn" id="clear-home" hidden>Clear</button>
+      </div>
+      <p class="small muted home-note">Stored only in this browser, rounded to about 10 km. Distances are straight-line, not driving.</p>
+    </div>
+  </section>
+
+  <p class="notice" style="margin-top:20px"><strong>None of these limits are verified with the site's club yet.</strong> They are working assumptions, with sources in each site's notes. Many sites need club membership, a waiver, or a club contact before a first visit. Check with the club that runs the site, not this page.</p>
+
+  <section aria-labelledby="active-h">
+    <div class="section-head">
+      <h2 id="active-h">Forecast daily</h2>
+      <span class="muted small">Wind direction is where it blows <em>from</em>. Hours are site-local.</span>
+    </div>
+    <div id="active-sites" class="site-grid" aria-live="polite"><p class="muted">Loading sites…</p></div>
+  </section>
+
+  <section aria-labelledby="pending-h">
+    <div class="section-head">
+      <h2 id="pending-h">Not forecast yet</h2>
+      <span class="muted small">Added to the daily forecast once every limit is filled in.</span>
+    </div>
+    <ul id="pending-sites" class="site-rows"></ul>
+  </section>
 </main>
