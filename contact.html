@@ -1,0 +1,50 @@
+---
+title: Contact
+description: How to reach Fly or Fold, and what to write about.
+body_class: sky
+---
+<section class="sky-hero sky-compact">
+  <div class="wrap hero-inner">
+    <p class="eyebrow">Contact</p>
+    <h1>Get in touch</h1>
+    <p class="lede">Corrections, new sites and questions about the forecasts are all welcome.</p>
+  </div>
+  {% include ridge.html %}
+</section>
+
+<main class="wrap">
+  <section class="card raised-panel contact-panel" aria-labelledby="email-h">
+    <h2 id="email-h">Email</h2>
+    <p class="contact-email"><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+    <p class="muted small">Fly or Fold is a small volunteer project, so replies can take a few days.</p>
+  </section>
+
+  <section aria-labelledby="what-h">
+    <h2 id="what-h">Good things to write about</h2>
+    <div class="contact-grid">
+      <div class="card">
+        <h3>A site's limits are wrong</h3>
+        <p>Tell us which site and which limit, and where the right value comes from: the club's site guide, a site briefing, or the club officer who confirmed it. Limits only change with a source.</p>
+      </div>
+      <div class="card">
+        <h3>A site to add</h3>
+        <p>Name, launch location, the wind directions and speeds it works in, and any access rules: club membership, waiver, or contacting the club before a first visit.</p>
+      </div>
+      <div class="card">
+        <h3>Something looks off</h3>
+        <p>A forecast that seems wrong, a page that breaks on your phone, or numbers that don't add up. A screenshot and the page address help.</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="notice" style="margin-top:24px"><strong>We can't tell you whether to fly.</strong> The forecasts here are a planning aid for a model grid cell about 25 km across, not the launch. For conditions on the day, check live observations and talk to the club that runs the site.</p>
+
+  <section aria-labelledby="code-h">
+    <h2 id="code-h">Code and data</h2>
+    <p>Everything is public on GitHub. If you use GitHub, you can also open an issue there:</p>
+    <ul>
+      <li><a href="https://github.com/FlyOrFold/flyorfold.github.io">flyorfold.github.io</a>: this website</li>
+      <li><a href="https://github.com/FlyOrFold/forecast-log">forecast-log</a>: the daily forecast job, site list and logged data</li>
+    </ul>
+  </section>
+</main>

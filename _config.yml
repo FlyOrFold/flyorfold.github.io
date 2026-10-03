@@ -6,6 +6,9 @@ url: https://flyorfold.com
 baseurl: ""
 lang: en
 
+# Public contact address, used by the footer and contact.html.
+email: info@flyorfold.com
+
 # No GitHub Pages theme: the site has its own layouts and CSS.
 theme: null
 

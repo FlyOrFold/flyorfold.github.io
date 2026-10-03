@@ -529,3 +529,10 @@ a.topic-chip:hover { border-color: var(--text-2); }
 .voice-grid ul { margin: 0; padding-left: 1.1em; }
 .demo-tiles { display: grid; gap: 10px; }
 
+/* ---------- Contact page ---------- */
+.contact-email { font-size: clamp(1.3rem, 5vw, 1.7rem); font-weight: 700; margin: 0 0 6px; overflow-wrap: anywhere; }
+.contact-email a { text-decoration-thickness: 2px; }
+.contact-panel .muted { margin: 0; }
+.contact-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.contact-grid h3 { margin-top: 0; }
+.contact-grid p { margin: 0; font-size: .92rem; color: var(--text-2); }
