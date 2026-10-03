@@ -1,7 +1,7 @@
 // Forecast page: run-by-run timeline for one site and weekend, plus the latest 14-day outlook.
 import {
-  addDays, dayMonth, isSample, latestIssued, loadForecasts, loadSites, localToday, monthOf,
-  monthsAround, pct, shortDate, toDate, weekdayShort, weekendHistory, weekendSaturday, weekendsWithData,
+  addDays, dayMonth, describeTrend, isSample, latestIssued, loadForecasts, loadSites, localToday,
+  monthOf, monthsAround, pct, shortDate, toDate, weekendHistory, weekendSaturday, weekendsWithData,
 } from "./data.js";
 import { el } from "./common.js";
 import { renderTimeline, timelineTable } from "./chart.js";
@@ -36,7 +36,10 @@ function syncURL() {
   history.replaceState(null, "", `?${p.toString().replace("sample=&", "sample&")}`);
 }
 
-function renderStrip(site) {
+const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+/** Latest run's 14 days as a Mon–Sun calendar, so weekends always sit in the last two columns. */
+function renderStrip(site, selectedSat) {
   const box = $("strip");
   const siteRows = rows.filter((r) => r.site === site.id);
   const latest = latestIssued(siteRows);
@@ -45,22 +48,69 @@ function renderStrip(site) {
     box.replaceChildren(el("p", { class: "empty" }, "No runs for this site yet."));
     return;
   }
-  $("strip-sub").textContent = `From the run of ${shortDate(latest)}. Darker means a higher chance of a flyable day. Weekends are outlined.`;
+  $("strip-sub").textContent = `Run of ${shortDate(latest)}`;
   const latestRows = siteRows.filter((r) => r.issued === latest).sort((a, b) => (a.target < b.target ? -1 : 1));
-  const cells = latestRows.map((r) => {
-    const dow = toDate(r.target).getUTCDay();
+  const mondayIndex = (iso) => (toDate(iso).getUTCDay() + 6) % 7;
+  const selected = new Set([selectedSat, addDays(selectedSat, 1)]);
+
+  const grid = el("div", { class: "cal", role: "table", "aria-label": `Chance of a flyable day from the run of ${shortDate(latest)}` });
+  const head = el("div", { class: "cal-row cal-head", role: "row" },
+    ...WEEKDAYS.map((d, i) => el("div", { class: `cal-dow${i >= 5 ? " wknd" : ""}`, role: "columnheader" }, d)));
+  grid.append(head);
+
+  let row = el("div", { class: "cal-row", role: "row" });
+  for (let i = 0; i < mondayIndex(latestRows[0].target); i++) row.append(el("div", { class: "cal-cell blank", role: "cell" }));
+  for (const r of latestRows) {
+    if (row.children.length === 7) { grid.append(row); row = el("div", { class: "cal-row", role: "row" }); }
+    const dow = mondayIndex(r.target);
+    const isWknd = dow >= 5;
     const share = Math.round(r.p * 100);
-    return el("div", {
-      class: `cell${dow === 0 || dow === 6 ? " weekend" : ""}`,
-      style: `background: color-mix(in oklab, var(--sky) ${share}%, var(--surface-2)); color: ${r.p > 0.55 ? "#fff" : "var(--text)"}`,
+    const sat = isWknd ? (dow === 5 ? r.target : addDays(r.target, -1)) : null;
+    const attrs = {
+      class: `cal-cell${isWknd ? " wknd" : ""}${selected.has(r.target) ? " selected" : ""}`,
+      role: "cell",
+      style: `--share: ${share}%; color: ${r.p > 0.55 ? "#fff" : "var(--text)"}`,
       title: `${shortDate(r.target)}: ${pct(r.p)} (${r.n} members)`,
-    }, `${weekdayShort(r.target)} ${Number(r.target.slice(8))}`, el("b", {}, pct(r.p)));
-  });
-  box.replaceChildren(
-    el("div", { class: "strip", role: "list", "aria-label": "Chance of a flyable day, next 14 days" },
-      ...cells.map((c) => { c.setAttribute("role", "listitem"); return c; })),
+    };
+    const content = [el("span", { class: "cal-date" }, String(Number(r.target.slice(8)))), el("b", {}, pct(r.p))];
+    if (sat && [...weekendSel.options].some((o) => o.value === sat)) {
+      const btn = el("button", { type: "button", "aria-label": `${shortDate(r.target)}, ${pct(r.p)}. Show this weekend` }, ...content);
+      btn.addEventListener("click", () => { weekendSel.value = sat; render(); $("chart-h").scrollIntoView({ behavior: "smooth", block: "start" }); });
+      row.append(el("div", attrs, btn));
+    } else {
+      row.append(el("div", attrs, ...content));
+    }
+  }
+  while (row.children.length < 7) row.append(el("div", { class: "cal-cell blank", role: "cell" }));
+  grid.append(row);
+
+  box.replaceChildren(grid,
     el("div", { class: "scale", "aria-hidden": "true" }, "0%",
-      el("span", { class: "ramp", style: "background: linear-gradient(90deg, var(--surface-2), var(--sky))" }), "100%"));
+      el("span", { class: "ramp", style: "background: linear-gradient(90deg, var(--surface-2), var(--sky))" }), "100%",
+      el("span", { class: "scale-note" }, "Tap a weekend to chart it")));
+}
+
+/** Two tiles: latest value, trend word, and net change for Saturday and Sunday. */
+function renderSummary(points, sat) {
+  const tiles = [["sat", "Saturday", sat, "var(--series-sat)"], ["sun", "Sunday", addDays(sat, 1), "var(--series-sun)"]]
+    .map(([key, name, day, color]) => {
+      const values = points.filter((pt) => pt[key]).map((pt) => pt[key].p);
+      const last = values[values.length - 1];
+      const trend = describeTrend(values);
+      let detail;
+      if (!values.length) detail = "Not forecast yet";
+      else if (!trend) detail = `${values.length} run${values.length === 1 ? "" : "s"} so far`;
+      else {
+        const pts = Math.round(trend.net * 100);
+        detail = `${pts > 0 ? "+" : pts < 0 ? "−" : "±"}${Math.abs(pts)} pts over ${values.length} runs`;
+      }
+      return el("div", { class: "sum-tile" },
+        el("div", { class: "label" }, el("i", { class: "key", style: `background:${color}` }), `${name} ${dayMonth(day)}`),
+        el("div", { class: "sum-value" }, values.length ? pct(last) : "–"),
+        trend ? el("div", { class: "sum-trend" }, el("span", { "aria-hidden": "true" }, trend.icon), ` ${trend.word}`) : null,
+        el("div", { class: "sum-detail" }, detail));
+    });
+  $("summary").replaceChildren(...tiles);
 }
 
 function render() {
@@ -69,10 +119,12 @@ function render() {
   if (!site) return;
   syncURL();
   const points = weekendHistory(rows, site.id, sat);
-  $("chart-h").textContent = `${site.name}`;
+  $("site-title").textContent = site.name;
+  document.title = `${site.name} · Forecast timeline | Fly or Fold`;
   $("chart-sub").textContent = points.length
-    ? `Saturday ${dayMonth(sat)} and Sunday ${dayMonth(addDays(sat, 1))} · ${points.length} run${points.length === 1 ? "" : "s"}, latest ${shortDate(points[points.length - 1].issued)}`
-    : `Saturday ${dayMonth(sat)} and Sunday ${dayMonth(addDays(sat, 1))}`;
+    ? `${points.length} run${points.length === 1 ? "" : "s"}, latest ${shortDate(points[points.length - 1].issued)}`
+    : "";
+  renderSummary(points, sat);
 
   cleanup?.();
   const chart = $("chart");
@@ -90,7 +142,7 @@ function render() {
     $("table").replaceChildren(timelineTable(points, sat));
     $("table-details").hidden = false;
   }
-  renderStrip(site);
+  renderStrip(site, sat);
   $("rules").replaceChildren(siteCard(site));
 }
 

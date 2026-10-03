@@ -1,26 +1,33 @@
 ---
 title: Forecast timeline
 description: How the chance of a flyable Saturday and Sunday changed with each daily forecast run.
+body_class: sky
 scripts:
   - /assets/js/forecast.js
 ---
-<main class="wrap">
-  <h1>Forecast timeline</h1>
-  <p class="muted">How the chance of a flyable Saturday and Sunday changed with each daily run, as the weekend got closer.</p>
+<section class="sky-hero sky-compact">
+  <div class="wrap hero-inner">
+    <p class="eyebrow">Forecast timeline</p>
+    <h1 id="site-title">Forecast</h1>
+    <form class="controls" id="controls" onsubmit="return false">
+      <label class="field">Site
+        <select id="site"></select>
+      </label>
+      <label class="field">Weekend
+        <select id="weekend"></select>
+      </label>
+    </form>
+  </div>
+  {% include ridge.html %}
+</section>
 
-  <form class="controls" id="controls" onsubmit="return false">
-    <label class="field">Site
-      <select id="site"></select>
-    </label>
-    <label class="field">Weekend
-      <select id="weekend"></select>
-    </label>
-  </form>
+<main class="wrap sky-main">
+  <section class="card raised-panel" aria-labelledby="chart-h">
+    <div id="summary" class="summary" aria-live="polite"></div>
 
-  <div class="card chart-card">
-    <div class="chart-title">
-      <h2 id="chart-h" style="margin-bottom:2px">&nbsp;</h2>
-      <p class="muted small" id="chart-sub" style="margin-bottom:10px"></p>
+    <div class="chart-head">
+      <h2 id="chart-h">Chance of a flyable day, by run</h2>
+      <p class="muted small" id="chart-sub"></p>
     </div>
     <div class="legend" aria-hidden="true">
       <span><i style="background: var(--series-sat)"></i>Saturday</span>
@@ -32,13 +39,15 @@ scripts:
       <summary>Show as a table</summary>
       <div id="table"></div>
     </details>
-  </div>
 
-  <p class="notice" style="margin-top:12px"><strong>Planning aid only.</strong> Each point is the share of ensemble members where that day meets the site's limits for long enough inside its flying window. The forecast is for a model grid cell about 25 km across, not the launch. Saturday and Sunday are scored separately; the chance that both days work is not in the data yet. Check live conditions and make your own call on the day.</p>
+    <p class="panel-note"><strong>Planning aid only.</strong> Each point is the share of ensemble members where that day meets the site's limits for long enough inside its flying window. The forecast is for a model grid cell about 25 km across, not the launch. Saturday and Sunday are scored separately; the chance that both days work is not in the data yet. Check live conditions and make your own call on the day.</p>
+  </section>
 
   <section aria-labelledby="strip-h">
-    <h2 id="strip-h">Next 14 days at this site</h2>
-    <p class="muted small" id="strip-sub"></p>
+    <div class="section-head">
+      <h2 id="strip-h">Next 14 days at this site</h2>
+      <span class="muted small" id="strip-sub"></span>
+    </div>
     <div class="card"><div id="strip"></div></div>
   </section>
 

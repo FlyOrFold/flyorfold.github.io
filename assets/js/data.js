@@ -178,3 +178,23 @@ export function weekendsWithData(rows, siteId) {
   }
   return [...set].sort();
 }
+
+/**
+ * Describe how one day's chance moved across runs, in plain words. Descriptive only:
+ * never a recommendation. `values` are probabilities 0–1 in run order.
+ *   Unsettled: two or more direction reversals with real size (>= 8 pts each way)
+ *   Rising / Falling: net change of 15 pts or more since the first run
+ *   Steady: anything else
+ * Returns null with fewer than three runs, since two points can't show a trend.
+ */
+export function describeTrend(values) {
+  if (values.length < 3) return null;
+  const steps = values.slice(1).map((v, i) => v - values[i]).filter((d) => Math.abs(d) >= 0.08);
+  let reversals = 0;
+  for (let i = 1; i < steps.length; i++) if (Math.sign(steps[i]) !== Math.sign(steps[i - 1])) reversals++;
+  const net = values[values.length - 1] - values[0];
+  if (reversals >= 2) return { word: "Unsettled", icon: "≈", net };
+  if (net >= 0.15) return { word: "Rising", icon: "↗", net };
+  if (net <= -0.15) return { word: "Falling", icon: "↘", net };
+  return { word: "Steady", icon: "→", net };
+}

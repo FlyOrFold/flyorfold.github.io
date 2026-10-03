@@ -226,16 +226,29 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
 th.num { text-align: right; }
 details > summary { cursor: pointer; color: var(--link); font-size: .9rem; padding: 8px; }
 
-/* 14-day strip */
-.strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-.strip .cell {
-  border-radius: 6px; padding: 6px 2px; text-align: center; font-size: .7rem; line-height: 1.25; white-space: nowrap;
-  font-variant-numeric: tabular-nums;
+/* 14-day calendar (Mon–Sun columns) */
+.cal { display: grid; gap: 3px; }
+.cal-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.cal-dow { font-size: .72rem; color: var(--muted); text-align: center; padding-bottom: 2px; }
+.cal-dow.wknd { color: var(--text); font-weight: 700; }
+.cal-cell {
+  border-radius: 8px; min-height: 52px; font-variant-numeric: tabular-nums;
+  background: color-mix(in oklab, var(--sky) var(--share, 0%), var(--surface-2));
+  display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2;
 }
-.strip .cell b { display: block; font-size: .95rem; }
-.strip .cell.weekend { outline: 1px solid var(--text-2); outline-offset: -1px; }
-.scale { display: flex; align-items: center; gap: 8px; font-size: .78rem; color: var(--muted); margin-top: 8px; }
-.scale .ramp { height: 8px; flex: 0 1 160px; border-radius: 4px; }
+.cal-cell.blank { background: transparent; }
+.cal-cell > button {
+  all: unset; box-sizing: border-box; width: 100%; height: 100%; min-height: 52px; border-radius: 8px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.cal-cell > button:hover { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--text) 35%, transparent); }
+.cal-cell > button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.cal-cell.selected { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--canopy); }
+.cal-date { font-size: .7rem; opacity: .8; }
+.cal-cell b { font-size: .95rem; }
+.scale { display: flex; align-items: center; gap: 8px; font-size: .78rem; color: var(--muted); margin-top: 12px; flex-wrap: wrap; }
+.scale .ramp { height: 8px; flex: 0 1 140px; border-radius: 4px; }
+.scale-note { margin-left: auto; }
 
 /* Sites */
 .site-card h3 { margin-bottom: 4px; }
@@ -301,11 +314,11 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
   --on-sky-btn: rgb(255 255 255 / .08);
 }
 
-body.home .site-header { background: var(--sky-top); border-bottom-color: transparent; }
-body.home .nav a { color: var(--text); }
-body.home .nav a:hover,
-body.home .nav a[aria-current="page"] { background: var(--on-sky-btn); }
-body.home .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, transparent); color: var(--text); }
+body.sky .site-header { background: var(--sky-top); border-bottom-color: transparent; }
+body.sky .nav a { color: var(--text); }
+body.sky .nav a:hover,
+body.sky .nav a[aria-current="page"] { background: var(--on-sky-btn); }
+body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, transparent); color: var(--text); }
 
 .sky-hero {
   position: relative;
@@ -352,15 +365,15 @@ body.home .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, tran
 @media (max-width: 640px) { .ridge { height: 90px; } }
 
 .home-main { padding-top: 0; }
-.outlook-panel {
+.raised-panel {
   position: relative; z-index: 1; margin-top: -64px; padding: 18px;
   box-shadow: 0 12px 32px rgb(16 35 58 / .12);
 }
-.outlook-panel .section-head h2 { margin-bottom: 4px; }
-.outlook-panel .grid { margin-top: 10px; }
-.outlook-panel .outlook-card { background: var(--bg); border-color: transparent; padding: 14px; }
+.raised-panel .section-head h2 { margin-bottom: 4px; }
+.raised-panel .grid { margin-top: 10px; }
+.outlook-card { background: var(--bg); border-color: transparent; padding: 14px; }
 .panel-note { font-size: .82rem; color: var(--muted); margin: 14px 2px 0; }
-@media (max-width: 640px) { .outlook-panel { margin-top: -40px; padding: 14px; } }
+@media (max-width: 640px) { .raised-panel { margin-top: -40px; padding: 14px; } }
 
 .day .spark { display: block; width: 100%; height: 30px; margin: 6px 0 4px; overflow: visible; }
 
@@ -375,3 +388,33 @@ body.home .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, tran
 }
 .news-item time a { color: inherit; text-decoration: none; }
 .news-item time a:hover { text-decoration: underline; }
+
+/* ---------- Compact sky band (forecast page) ---------- */
+.sky-compact { padding-top: 22px; }
+.sky-compact .hero-inner { padding-bottom: 104px; }
+.sky-compact .hero-inner h1 { font-size: clamp(1.7rem, 5.5vw, 2.5rem); max-width: none; margin-bottom: .2em; }
+.sky-compact .eyebrow { margin-bottom: 6px; }
+.sky-compact .controls { margin: 12px 0 0; }
+.sky-compact .field { color: var(--text); font-weight: 600; }
+.sky-compact .ridge { height: 120px; }
+.sky-main { padding-top: 0; }
+@media (max-width: 640px) {
+  .sky-compact .hero-inner { padding-bottom: 76px; }
+  .sky-compact .ridge { height: 76px; }
+  .sky-compact .eyebrow { max-width: none; }
+}
+
+/* Summary tiles above the chart */
+.summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.sum-tile { background: var(--surface-2); border-radius: var(--radius-sm); padding: 12px 14px; }
+.sum-tile .label { font-size: .82rem; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
+.sum-tile .key { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.sum-value { font-size: clamp(2rem, 8vw, 2.8rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; margin: 4px 0 2px; }
+.sum-trend { font-weight: 650; color: var(--text); }
+.sum-trend span { display: inline-block; width: 1.1em; }
+.sum-detail { font-size: .82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.chart-head h2 { font-size: 1.05rem; margin-bottom: 2px; }
+.chart-head p { margin-bottom: 8px; }
+.raised-panel .legend { padding: 0 0 8px; }
+.raised-panel .chart { margin: 0 -6px; }
+.raised-panel details > summary { padding: 8px 0; }
