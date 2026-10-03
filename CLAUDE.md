@@ -113,6 +113,9 @@ any write-capable credential in this repo.
 - Sky band sizes (`--band-top`, `--ridge-h`, `--ridge-clear`, `--panel-overlap`, `--glider-w`) live
   together at the top of the sky scene section, with phone values in one media query. Change them
   there; never hard-code a ridge height, hero padding or panel overlap elsewhere.
+- Logo: `assets/img/logo.svg` (tile `--logo-blue` #245a96, white-edged canopy). `favicon.svg` is a copy,
+  and the PNG icons are rendered from it (commands in the README); regenerate all of them together.
+  Print uses the one-colour marks `logo-mono-white.svg` / `logo-mono-navy.svg`.
 - Brand tokens are documented on the Brand page. `brand.html` is a live style
   guide: swatch values are read from the CSS at runtime, and `_data/brand.yml` only names and
   explains each token. Add new tokens there so they show up. Chart series colors (Sky, Canopy) were validated for color-blind separation in both

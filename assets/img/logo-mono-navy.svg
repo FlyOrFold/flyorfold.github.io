@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Fly or Fold">
+  <!-- One-colour mark for print (chips, stamps, stickers, embroidery). One ink, no tile:
+       the material is the background. Lines are heavier than the web logo so they survive small prints. -->
+  <g stroke="#10233a" stroke-width="2.4" stroke-linecap="round" fill="none">
+    <path d="M12.5 29.5 32 49M21.5 22.5 32 49M32 19.5V49M42.5 22.5 32 49M51.5 29.5 32 49"/>
+  </g>
+  <path d="M8 29 C16 15 48 15 56 29 L52.5 31.5 C44 21 20 21 11.5 31.5 Z" fill="#10233a"/>
+  <circle cx="32" cy="50" r="4" fill="#10233a"/>
+</svg>

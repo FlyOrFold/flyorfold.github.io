@@ -2,7 +2,8 @@
 # the live CSS (assets/css/site.css), so this file only names and explains each token.
 - group: Brand
   tokens:
-    - { token: --ink, name: Ink, use: "Logo tile, primary button, text in light mode" }
+    - { token: --logo-blue, name: Logo blue, use: "Logo tile. Same in both themes; baked into logo.svg and the icon PNGs" }
+    - { token: --ink, name: Ink, use: "Primary button and text in light mode; ink for the navy one-colour mark" }
     - { token: --sky, name: Sky, use: "Primary color. Saturday series, forecast-daily pins" }
     - { token: --canopy, name: Canopy, use: "Accent. Sunday series, glider, timeline dots, step numbers" }
     - { token: --ridge, name: Ridge, use: "Status: forecast daily. Never a chart series" }

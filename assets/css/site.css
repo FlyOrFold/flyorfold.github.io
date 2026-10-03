@@ -15,7 +15,8 @@
   color-scheme: light dark;
 
   /* Brand */
-  --ink: #10233a;                                  /* deep navy: logo tile, primary button (light) */
+  --ink: #10233a;                                  /* deep navy: text and primary button (light) */
+  --logo-blue: #245a96;                            /* logo tile; the logo SVG and icon PNGs use it directly */
   --sky: light-dark(#2f7fd0, #4a90dc);             /* primary; Saturday series */
   --canopy: light-dark(#e0662a, #de6a2c);          /* accent; Sunday series */
   --ridge: light-dark(#2e7d5b, #4fae84);           /* status: forecast daily */
@@ -531,6 +532,14 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .brand.big { font-size: 1.6rem; gap: 12px; }
 @media (max-width: 480px) { .logo-tile.wordmark { grid-column: 1 / -1; } .brand.big { font-size: 1.3rem; white-space: nowrap; } }
 .file-list { padding-left: 1.1em; margin: 0; font-size: .92rem; }
+.mono-row { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 120px), 1fr)); margin: 12px 0 14px; }
+.mono-tile {
+  margin: 0; border-radius: var(--radius); padding: 18px 8px 10px; min-height: 120px;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 8px;
+}
+.mono-tile figcaption { font-size: .75rem; color: #fff; }
+.mono-tile.light-bg { border: 1px solid var(--line); }
+.mono-tile.light-bg figcaption { color: #10233a; }
 .file-list li { margin-bottom: 4px; }
 
 .swatch-group { font-size: .82rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); margin: 20px 0 8px; }

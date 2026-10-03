@@ -2,7 +2,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% seo %}
 {% feed_meta %}
-<meta name="theme-color" content="#10233a">
+<!-- Browser bar colour: matches the sky header (--sky-top) in each theme. -->
+<meta name="theme-color" content="#8ec3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#07101c" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="{{ '/favicon.svg' | relative_url }}" type="image/svg+xml">
 <link rel="icon" href="{{ '/favicon-32.png' | relative_url }}" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="{{ '/apple-touch-icon.png' | relative_url }}">

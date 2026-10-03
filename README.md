@@ -86,12 +86,21 @@ shows all of them, and each gets its own page and a feed entry.
 ## Brand
 
 Colors live as CSS custom properties at the top of `assets/css/site.css`, with separate dark-mode
-values. `brand.html` documents them. The logo source is `assets/img/logo.svg`; the PNG icons were
-rendered from it:
+values. `brand.html` documents them. The logo source is `assets/img/logo.svg` (tile `#245a96`);
+`favicon.svg` is a copy of it, and the PNG icons were rendered from it:
 
 ```bash
 rsvg-convert -w 512 -h 512 assets/img/logo.svg -o assets/img/icon-512.png
 ```
+
+`apple-touch-icon.png` uses square corners (iOS rounds them itself):
+
+```bash
+sed 's/rx="14" //' assets/img/logo.svg | rsvg-convert -w 180 -h 180 -o apple-touch-icon.png
+```
+
+For print in a single ink (poker chips, stamps, stickers), use `assets/img/logo-mono-white.svg` or
+`logo-mono-navy.svg`. The Brand page explains when to use which.
 
 ## Content rules
 
