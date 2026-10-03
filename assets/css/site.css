@@ -1,29 +1,47 @@
-/* Fly or Fold — site styles. Brand tokens are documented on brand.html. */
+/* Fly or Fold — site styles. Brand tokens are documented on brand.html.
+   Every colour is light-dark(light value, dark value). The theme follows the system setting,
+   and the header button pins it via data-theme on <html>, which only switches color-scheme. */
 
 :root {
-  /* Brand */
-  --ink: #10233a;          /* deep navy: text, logo tile */
-  --sky: #2f7fd0;          /* primary; Saturday series */
-  --canopy: #e0662a;       /* accent; Sunday series */
-  --ridge: #2e7d5b;        /* "forecast active" status */
-  --caution: #b7791f;      /* "unverified" status */
+  color-scheme: light dark;
 
-  /* Surfaces and text (light) */
-  --bg: #f4f6f9;
-  --surface: #fcfcfb;
-  --surface-2: #eaeef3;
-  --line: #d8dee6;
-  --text: #10233a;
-  --text-2: #3d4f63;
-  --muted: #5f6f81;
-  --link: #1f6bb8;
-  --focus: #2f7fd0;
+  /* Brand */
+  --ink: #10233a;                                  /* deep navy: logo tile, primary button (light) */
+  --sky: light-dark(#2f7fd0, #4a90dc);             /* primary; Saturday series */
+  --canopy: light-dark(#e0662a, #de6a2c);          /* accent; Sunday series */
+  --ridge: light-dark(#2e7d5b, #4fae84);           /* status: forecast daily */
+  --caution: light-dark(#b7791f, #d9a441);         /* status: unverified */
+
+  /* Surfaces and text */
+  --bg: light-dark(#f4f6f9, #0b1420);
+  --surface: light-dark(#fcfcfb, #0f1a28);
+  --surface-2: light-dark(#eaeef3, #172434);
+  --line: light-dark(#d8dee6, #243447);
+  --text: light-dark(#10233a, #e8eef5);
+  --text-2: light-dark(#3d4f63, #b9c6d4);
+  --muted: light-dark(#5f6f81, #8d9cad);
+  --link: light-dark(#1f6bb8, #7fb6ee);
+  --focus: light-dark(#2f7fd0, #7fb6ee);
+
+  /* Filled controls: primary button, pressed filter chip */
+  --accent: light-dark(var(--ink), var(--sky));
+  --on-accent: light-dark(#fff, #08111c);
 
   /* Chart */
   --series-sat: var(--sky);
   --series-sun: var(--canopy);
-  --grid: #e3e8ee;
-  --ref: #8a97a6;
+  --grid: light-dark(#e3e8ee, #1e2c3d);
+  --ref: light-dark(#8a97a6, #6f7f91);
+
+  /* Sky scene */
+  --sky-top: light-dark(#8ec3ee, #07101c);
+  --sky-mid: light-dark(#c4e0f6, #0f2240);
+  --sky-low: light-dark(#eaf3fb, #1d3757);
+  --sky-glow: light-dark(rgb(224 102 42 / .16), rgb(222 106 44 / .30));
+  --ridge-far: light-dark(#a6c1d9, #172a40);
+  --ridge-near: light-dark(#7797b6, #102033);
+  --glider-line: light-dark(rgb(16 35 58 / .55), rgb(232 238 245 / .55));
+  --on-sky-btn: light-dark(rgb(255 255 255 / .6), rgb(255 255 255 / .08));
 
   /* Type and shape */
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -31,49 +49,9 @@
   --radius-sm: 8px;
   --gutter: 16px;
   --maxw: 960px;
-
-  color-scheme: light;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --sky: #4a90dc;
-    --canopy: #de6a2c;
-    --ridge: #4fae84;
-    --caution: #d9a441;
-    --bg: #0b1420;
-    --surface: #0f1a28;
-    --surface-2: #172434;
-    --line: #243447;
-    --text: #e8eef5;
-    --text-2: #b9c6d4;
-    --muted: #8d9cad;
-    --link: #7fb6ee;
-    --focus: #7fb6ee;
-    --grid: #1e2c3d;
-    --ref: #6f7f91;
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-  --sky: #4a90dc;
-  --canopy: #de6a2c;
-  --ridge: #4fae84;
-  --caution: #d9a441;
-  --bg: #0b1420;
-  --surface: #0f1a28;
-  --surface-2: #172434;
-  --line: #243447;
-  --text: #e8eef5;
-  --text-2: #b9c6d4;
-  --muted: #8d9cad;
-  --link: #7fb6ee;
-  --focus: #7fb6ee;
-  --grid: #1e2c3d;
-  --ref: #6f7f91;
-  color-scheme: dark;
-}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -129,18 +107,13 @@ p { margin: 0 0 1em; }
 
 main.wrap { padding-bottom: 56px; }
 
-/* Hero */
-.hero { padding: 28px 0 8px; }
-.hero p.lede { font-size: 1.1rem; color: var(--text-2); max-width: 40em; }
-.hero .cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-
+/* Buttons */
+.cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .btn {
   display: inline-block; padding: 10px 16px; border-radius: var(--radius-sm);
-  background: var(--ink); color: #fff; text-decoration: none; font-weight: 600; border: 1px solid var(--ink);
+  background: var(--accent); color: var(--on-accent); text-decoration: none; font-weight: 600; border: 1px solid var(--accent);
 }
-:root[data-theme="dark"] .btn { background: var(--sky); border-color: var(--sky); color: #08111c; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { background: var(--sky); border-color: var(--sky); color: #08111c; } }
-:root .btn.secondary { background: transparent; color: var(--text); border-color: var(--line); }
+.btn.secondary { background: transparent; color: var(--text); border-color: var(--line); }
 
 /* Cards and sections */
 section { margin-top: 32px; }
@@ -158,7 +131,6 @@ section { margin-top: 32px; }
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0; color: var(--text-2); font-size: .925rem;
 }
 .notice strong { color: var(--text); }
-.notice.info { border-left-color: var(--sky); }
 
 /* Weekend outlook cards */
 .outlook-card h3 { margin-bottom: 2px; }
@@ -184,15 +156,12 @@ section { margin-top: 32px; }
 /* Forms */
 .controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; margin: 8px 0 16px; }
 .field { display: grid; gap: 4px; font-size: .85rem; color: var(--text-2); min-width: 0; flex: 1 1 180px; }
-.field.check { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
 select {
   font: inherit; font-size: 1rem; color: var(--text); background: var(--surface);
   border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 10px; width: 100%;
 }
 
 /* Chart */
-.chart-card { padding: 16px 8px 12px 8px; }
-.chart-card .chart-title { padding: 0 8px; }
 .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .875rem; color: var(--text-2); padding: 0 8px 8px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend i { width: 18px; height: 2px; border-radius: 1px; display: inline-block; }
@@ -319,11 +288,9 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .link-btn { all: unset; color: var(--link); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; font-size: .9rem; }
 .link-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
 
-/* Dark map tiles: invert the light OSM tiles rather than load a second tile set. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .site-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); }
-}
-:root[data-theme="dark"] .site-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); }
+/* Dark map tiles: invert the light OSM tiles rather than load a second tile set.
+   data-scheme is the theme in use, set by the head script and common.js. */
+:root[data-scheme="dark"] .site-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); }
 
 /* Footer */
 .site-footer { border-top: 1px solid var(--line); padding: 24px 0 40px; color: var(--muted); font-size: .85rem; }
@@ -335,39 +302,6 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 }
 
 /* ---------- Home: sky and ridge hero ---------- */
-
-:root {
-  --sky-top: #8ec3ee;
-  --sky-mid: #c4e0f6;
-  --sky-low: #eaf3fb;
-  --sky-glow: rgb(224 102 42 / .16);
-  --ridge-far: #a6c1d9;
-  --ridge-near: #7797b6;
-  --glider-line: rgb(16 35 58 / .55);
-  --on-sky-btn: rgb(255 255 255 / .6);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --sky-top: #07101c;
-    --sky-mid: #0f2240;
-    --sky-low: #1d3757;
-    --sky-glow: rgb(222 106 44 / .30);
-    --ridge-far: #172a40;
-    --ridge-near: #102033;
-    --glider-line: rgb(232 238 245 / .55);
-    --on-sky-btn: rgb(255 255 255 / .08);
-  }
-}
-:root[data-theme="dark"] {
-  --sky-top: #07101c;
-  --sky-mid: #0f2240;
-  --sky-low: #1d3757;
-  --sky-glow: rgb(222 106 44 / .30);
-  --ridge-far: #172a40;
-  --ridge-near: #102033;
-  --glider-line: rgb(232 238 245 / .55);
-  --on-sky-btn: rgb(255 255 255 / .08);
-}
 
 body.sky .site-header { background: var(--sky-top); border-bottom-color: transparent; }
 body.sky .nav a { color: var(--text); }
@@ -391,7 +325,7 @@ body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, trans
   font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
   color: var(--text-2); margin-bottom: 10px;
 }
-.sky-hero .cta .btn.on-sky { background: var(--on-sky-btn); color: var(--text); border-color: color-mix(in srgb, var(--text) 20%, transparent); }
+.btn.on-sky { background: var(--on-sky-btn); color: var(--text); border-color: color-mix(in srgb, var(--text) 20%, transparent); }
 
 .glider {
   position: absolute; z-index: 0; width: 132px; right: max(16px, calc(50% - 470px)); top: 28px;
@@ -419,7 +353,6 @@ body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, trans
 .ridge-ground { fill: var(--bg); }
 @media (max-width: 640px) { .ridge { height: 90px; } }
 
-.home-main { padding-top: 0; }
 .raised-panel {
   position: relative; z-index: 1; margin-top: -64px; padding: 18px;
   box-shadow: 0 12px 32px rgb(16 35 58 / .12);
@@ -450,7 +383,6 @@ body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, trans
 .sky-compact .controls { margin: 12px 0 0; }
 .sky-compact .field { color: var(--text); font-weight: 600; }
 .sky-compact .ridge { height: 120px; }
-.sky-main { padding-top: 0; }
 @media (max-width: 640px) {
   .sky-compact .hero-inner { padding-bottom: 76px; }
   .sky-compact .ridge { height: 76px; }
@@ -507,11 +439,7 @@ a.topic-chip:hover { border-color: var(--text-2); }
   background: var(--surface-2); color: var(--text-2); border: 1px solid var(--line);
 }
 .chip:hover { border-color: var(--text-2); }
-.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
-:root[data-theme="dark"] .chip[aria-pressed="true"] { background: var(--sky); border-color: var(--sky); color: #08111c; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .chip[aria-pressed="true"] { background: var(--sky); border-color: var(--sky); color: #08111c; }
-}
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
 /* Single post */
 .sky-compact .eyebrow a { color: inherit; }

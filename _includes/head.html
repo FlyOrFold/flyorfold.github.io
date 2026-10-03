@@ -7,5 +7,14 @@
 <link rel="icon" href="{{ '/favicon-32.png' | relative_url }}" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="{{ '/apple-touch-icon.png' | relative_url }}">
 <link rel="manifest" href="{{ '/site.webmanifest' | relative_url }}">
-<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<script>
+  // Before first paint: apply a pinned theme, and record the theme in use as data-scheme (common.js keeps it current).
+  (() => {
+    const root = document.documentElement;
+    let t = null;
+    try { t = localStorage.getItem("theme"); } catch {}
+    if (t === "light" || t === "dark") root.dataset.theme = t;
+    root.dataset.scheme = root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  })();
+</script>
 <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">

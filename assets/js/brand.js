@@ -20,10 +20,7 @@ function resolve(token) {
   return a != null && a < 1 ? `${hex} @ ${Math.round(a * 100)}%` : hex;
 }
 
-function isDark() {
-  const t = document.documentElement.dataset.theme;
-  return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-}
+const isDark = () => document.documentElement.dataset.scheme === "dark";
 
 function paint() {
   for (const s of swatches) s.querySelector(".hex").textContent = resolve(s.dataset.token);
@@ -45,7 +42,6 @@ for (const s of swatches) {
 }
 
 document.addEventListener("themechange", paint);
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paint);
 paint();
 
 document.getElementById("demo-dial").append(directionDial([[340, 20]]));
