@@ -1,0 +1,9 @@
+# Optional `topic:` for news posts. Use the key in front matter, e.g. `topic: site`.
+- key: site
+  label: Site
+- key: scoring
+  label: Scoring
+- key: data
+  label: Data
+- key: website
+  label: Website

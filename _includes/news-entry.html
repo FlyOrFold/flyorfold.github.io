@@ -1,0 +1,10 @@
+{%- assign post = include.post -%}
+{%- assign topic = site.data.topics | where: "key", post.topic | first -%}
+<li class="tl-item"{% if topic %} data-topic="{{ topic.key }}"{% endif %}>
+  <div class="tl-meta">
+    <time datetime="{{ post.date | date: '%Y-%m-%d' }}">{{ post.date | date: "%a %b %-d" }}{% if include.year %}, {{ post.date | date: "%Y" }}{% endif %}</time>
+    {%- if topic %}<span class="topic-chip">{{ topic.label }}</span>{% endif %}
+  </div>
+  <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+  <div class="tl-body">{{ post.content }}</div>
+</li>

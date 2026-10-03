@@ -181,12 +181,6 @@ section { margin-top: 32px; }
 .badge.off { color: var(--muted); }
 .badge.sample { color: var(--canopy); }
 
-/* News */
-.news-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-.news-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
-.news-item time { font-size: .8rem; color: var(--muted); display: block; margin-bottom: 2px; }
-.news-item p { margin: 0; }
-
 /* Forms */
 .controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; margin: 8px 0 16px; }
 .field { display: grid; gap: 4px; font-size: .85rem; color: var(--text-2); min-width: 0; flex: 1 1 180px; }
@@ -456,8 +450,6 @@ body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, trans
   flex: 0 0 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
   background: var(--canopy); color: #fff; font-weight: 700; font-size: .95rem;
 }
-.news-item time a { color: inherit; text-decoration: none; }
-.news-item time a:hover { text-decoration: underline; }
 
 /* ---------- Compact sky band (forecast page) ---------- */
 .sky-compact { padding-top: 22px; }
@@ -488,3 +480,56 @@ body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, trans
 .raised-panel .legend { padding: 0 0 8px; }
 .raised-panel .chart { margin: 0 -6px; }
 .raised-panel details > summary { padding: 8px 0; }
+
+/* ---------- News timeline ---------- */
+.news-panel { padding: 20px 20px 4px; }
+.tl-month { font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); margin: 0 0 12px; }
+.tl-month-group + .tl-month-group { margin-top: 8px; }
+.timeline { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; }
+.timeline::before {
+  content: ""; position: absolute; left: 7px; top: 8px; bottom: 18px; width: 2px;
+  background: var(--line); border-radius: 1px;
+}
+.tl-item { position: relative; padding-bottom: 20px; }
+.tl-item::before {
+  content: ""; position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--canopy); box-shadow: 0 0 0 3px var(--surface);
+}
+.tl-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tl-meta time { font-size: .8rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tl-item h3 { font-size: 1.05rem; margin: 2px 0 4px; }
+.tl-item h3 a { color: var(--text); text-decoration: none; }
+.tl-item h3 a:hover { text-decoration: underline; }
+.tl-body { color: var(--text-2); font-size: .95rem; }
+.tl-body p { margin: 0 0 .5em; }
+.tl-body > :last-child { margin-bottom: 0; }
+
+.topic-chip {
+  display: inline-block; font-size: .72rem; font-weight: 600; padding: 1px 8px; border-radius: 999px;
+  background: var(--surface-2); color: var(--text-2); border: 1px solid var(--line); text-decoration: none;
+}
+a.topic-chip:hover { border-color: var(--text-2); }
+
+.topic-filter { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 18px; }
+.chip {
+  font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; padding: 5px 12px; border-radius: 999px;
+  background: var(--surface-2); color: var(--text-2); border: 1px solid var(--line);
+}
+.chip:hover { border-color: var(--text-2); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+:root[data-theme="dark"] .chip[aria-pressed="true"] { background: var(--sky); border-color: var(--sky); color: #08111c; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .chip[aria-pressed="true"] { background: var(--sky); border-color: var(--sky); color: #08111c; }
+}
+
+/* Single post */
+.sky-compact .eyebrow a { color: inherit; }
+.post-body { padding: 22px; font-size: 1.05rem; }
+.post-body > :last-child { margin-bottom: 0; }
+.post-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0 8px; }
+.post-nav-link {
+  display: grid; gap: 2px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); text-decoration: none; font-weight: 600;
+}
+.post-nav-link:hover { border-color: var(--text-2); }
+.post-nav-link.next { text-align: right; grid-column: 2; }

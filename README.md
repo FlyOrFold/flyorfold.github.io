@@ -65,11 +65,13 @@ News items are Jekyll posts. Add a file named `_posts/YYYY-MM-DD-short-slug.md`:
 ```markdown
 ---
 title: Added Hyner View
+topic: site
 ---
 Hyner View (PA) is now in the forecast log. See the [site page](/sites.html#hyner-view).
 ```
 
-Keep it to a sentence or two. Markdown works. The home page shows the latest three, `news.html`
+Keep it to a sentence or two. Markdown works. `topic` is optional: one of `site`, `scoring`, `data`
+or `website` (defined in `_data/topics.yml`); the news page can filter by it. The home page shows the latest three, `news.html`
 shows all of them, and each gets its own page and a feed entry.
 
 ## Brand

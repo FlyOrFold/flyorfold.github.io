@@ -1,15 +1,42 @@
 ---
 title: News
 description: Short updates from Fly or Fold.
+body_class: sky
+scripts:
+  - /assets/js/news.js
 ---
-<main class="wrap">
-  <h1>News</h1>
-  <p class="muted">Short updates: new sites, changes to how forecasts are scored, and anything else worth knowing. <a href="{{ '/news/feed.xml' | relative_url }}">Subscribe to the feed</a>.</p>
-  <ul class="news-list">
-    {%- for post in site.posts %}
-    {% include news-item.html post=post %}
+<section class="sky-hero sky-compact">
+  <div class="wrap hero-inner">
+    <p class="eyebrow">News</p>
+    <h1>What's new</h1>
+    <p class="lede">Short updates: new sites, changes to how forecasts are scored, and anything else worth knowing.</p>
+    <div class="cta"><a class="btn on-sky" href="{{ '/news/feed.xml' | relative_url }}">Subscribe to the feed</a></div>
+  </div>
+  {% include ridge.html %}
+</section>
+
+<main class="wrap sky-main">
+  <section class="card raised-panel news-panel" aria-label="All news">
+    <div class="topic-filter" id="topic-filter" role="group" aria-label="Filter by topic" hidden>
+      <button type="button" class="chip" data-topic="" aria-pressed="true">All</button>
+      {%- for t in site.data.topics %}
+      <button type="button" class="chip" data-topic="{{ t.key }}" aria-pressed="false">{{ t.label }}</button>
+      {%- endfor %}
+    </div>
+
+    {%- assign months = site.posts | group_by_exp: "p", "p.date | date: '%B %Y'" %}
+    {%- for month in months %}
+    <div class="tl-month-group">
+      <h2 class="tl-month">{{ month.name }}</h2>
+      <ol class="timeline">
+        {%- for post in month.items %}
+        {% include news-entry.html post=post %}
+        {%- endfor %}
+      </ol>
+    </div>
     {%- else %}
-    <li class="news-item muted">No news yet.</li>
+    <p class="muted">No news yet.</p>
     {%- endfor %}
-  </ul>
+    <p class="muted small" id="topic-empty" hidden>No news on this topic yet.</p>
+  </section>
 </main>

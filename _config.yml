@@ -25,7 +25,7 @@ defaults:
   - scope: { path: "" }
     values: { layout: default }
   - scope: { path: "", type: posts }
-    values: { layout: post, permalink: "/news/:year/:month/:day/:title/" }
+    values: { layout: post, body_class: sky, permalink: "/news/:year/:month/:day/:title/" }
 
 exclude:
   - README.md

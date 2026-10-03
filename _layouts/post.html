@@ -1,11 +1,23 @@
 ---
 layout: default
 ---
-<main class="wrap">
-  <p class="small"><a href="{{ '/news.html' | relative_url }}">← All news</a></p>
-  <article class="news-item">
-    <time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%A, %B %-d, %Y" }}</time>
-    <h1 style="font-size:1.4rem">{{ page.title }}</h1>
+{%- assign topic = site.data.topics | where: "key", page.topic | first -%}
+<section class="sky-hero sky-compact">
+  <div class="wrap hero-inner">
+    <p class="eyebrow"><a href="{{ '/news.html' | relative_url }}">News</a> · <time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: "%B %-d, %Y" }}</time></p>
+    <h1>{{ page.title }}</h1>
+    {%- if topic %}<p><a class="topic-chip" href="{{ '/news.html' | relative_url }}?topic={{ topic.key }}">{{ topic.label }}</a></p>{% endif %}
+  </div>
+  {% include ridge.html %}
+</section>
+
+<main class="wrap sky-main">
+  <article class="card raised-panel post-body">
     {{ content }}
   </article>
+  <nav class="post-nav" aria-label="More news">
+    {%- if page.previous %}<a class="post-nav-link prev" href="{{ page.previous.url | relative_url }}"><span class="muted small">Older</span><span>{{ page.previous.title }}</span></a>{% else %}<span></span>{% endif %}
+    {%- if page.next %}<a class="post-nav-link next" href="{{ page.next.url | relative_url }}"><span class="muted small">Newer</span><span>{{ page.next.title }}</span></a>{% endif %}
+  </nav>
+  <p class="small"><a href="{{ '/news.html' | relative_url }}">← All news</a></p>
 </main>

@@ -50,12 +50,14 @@ scripts:
       <h2 id="news-h">News</h2>
       <a href="{{ '/news.html' | relative_url }}">All news</a>
     </div>
-    <ul class="news-list">
-      {%- for post in site.posts limit: 3 %}
-      {% include news-item.html post=post %}
-      {%- else %}
-      <li class="news-item muted">No news yet.</li>
-      {%- endfor %}
-    </ul>
+    <div class="card news-panel">
+      <ol class="timeline">
+        {%- for post in site.posts limit: 3 %}
+        {% include news-entry.html post=post year=true %}
+        {%- else %}
+        <li class="muted">No news yet.</li>
+        {%- endfor %}
+      </ol>
+    </div>
   </section>
 </main>
