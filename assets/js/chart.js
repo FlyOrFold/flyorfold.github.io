@@ -1,15 +1,9 @@
 // Timeline chart: how the forecast for one weekend changed run by run. Plain SVG, no dependencies.
 import { addDays, daysBetween, dayMonth, pct, shortDate, weekdayShort } from "./data.js";
 import { el } from "./common.js";
+import { svgEl } from "./svg.js";
 
-const NS = "http://www.w3.org/2000/svg";
 const REF = 0.7;
-
-function svgEl(tag, attrs = {}) {
-  const n = document.createElementNS(NS, tag);
-  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
-  return n;
-}
 
 const SERIES = [
   { key: "sat", label: "Saturday", short: "Sat", color: "var(--series-sat)" },
@@ -21,7 +15,7 @@ const SERIES = [
  * (a gap of more than one day) or where criteria_version changes, because
  * probabilities from different criteria are not comparable.
  */
-function segments(points, key) {
+export function segments(points, key) {
   const out = [];
   let cur = [];
   let prev = null;

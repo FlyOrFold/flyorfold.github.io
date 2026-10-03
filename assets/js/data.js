@@ -9,10 +9,8 @@ const REQUIRED = ["lat", "lon", "dir_ranges", "speed_min", "speed_max", "gust_ma
   "rain_mm_max", "fly_start", "fly_end", "min_hours"];
 
 // ?sample in the URL switches to the bundled sample data. Never silent: pages show a badge.
-export const isSample = new URLSearchParams(location.search).has("sample");
+export const isSample = typeof location !== "undefined" && new URLSearchParams(location.search).has("sample");
 const BASE = isSample ? SAMPLE_BASE : LIVE_BASE;
-
-export const SOURCE_URL = "https://github.com/FlyOrFold/forecast-log";
 
 /** Minimal RFC 4180 parser: quoted fields, doubled quotes, CRLF or LF. */
 export function parseCSV(text) {
@@ -134,14 +132,18 @@ export function monthsAround(today) {
 
 const fmt = (opts) => new Intl.DateTimeFormat(undefined, { timeZone: "UTC", ...opts });
 const fmtShort = fmt({ weekday: "short", month: "short", day: "numeric" });
-const fmtLong = fmt({ weekday: "long", month: "long", day: "numeric", year: "numeric" });
 const fmtDay = fmt({ month: "short", day: "numeric" });
 export const shortDate = (s) => fmtShort.format(toDate(s));
-export const longDate = (s) => fmtLong.format(toDate(s));
 export const dayMonth = (s) => fmtDay.format(toDate(s));
 export const weekdayShort = (s) => fmt({ weekday: "short" }).format(toDate(s));
 
 export const pct = (p) => (p == null || Number.isNaN(p) ? "–" : `${Math.round(p * 100)}%`);
+
+/** A change in probability as signed percentage points: "+3 pts", "−13 pts" (true minus), "±0 pts". */
+export function signedPts(delta) {
+  const n = Math.round(delta * 100);
+  return `${n > 0 ? "+" : n < 0 ? "−" : "±"}${Math.abs(n)} pts`;
+}
 
 /** Latest issued date in the rows, or null. */
 export function latestIssued(rows) {

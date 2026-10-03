@@ -1,13 +1,7 @@
 // A site's limits as a card (forecast sites) or a compact row (sites not forecast yet),
 // with a compass dial of its allowed wind directions.
 import { el, withSample } from "./common.js";
-
-const NS = "http://www.w3.org/2000/svg";
-const svgEl = (tag, attrs = {}) => {
-  const n = document.createElementNS(NS, tag);
-  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
-  return n;
-};
+import { svgEl } from "./svg.js";
 
 /** Compass dial. Degrees are where the wind blows FROM, N = 0, clockwise. Ranges may wrap north. */
 export function directionDial(ranges) {

@@ -114,19 +114,16 @@ scripts:
         <p class="small muted">Topic labels, and filter buttons with a pressed state.</p>
       </div>
       <div class="card component">
-        <h3>Summary tile</h3>
-        <div class="sum-tile">
-          <div class="label"><i class="key" style="background: var(--series-sat)"></i>Saturday Oct 3</div>
-          <div class="sum-value">94%</div>
-          <div class="sum-trend"><span aria-hidden="true">↗</span> Rising</div>
-          <div class="sum-detail">+52 pts over 13 runs</div>
-        </div>
-        <p class="small muted">Trend words describe the forecast. They never say whether to go.</p>
+        <h3>Day tiles</h3>
+        <div class="demo-tiles" id="demo-tiles"></div>
+        <p class="small muted">Large on the forecast page with a trend word, compact on the home page with a line of every run. Trend words describe the forecast; they never say whether to go.</p>
       </div>
       <div class="card component">
         <h3>Timeline</h3>
         <ol class="timeline">
-          <li class="tl-item"><div class="tl-meta"><time>Fri Oct 2</time><span class="topic-chip">Website</span></div><h3>News item title</h3><div class="tl-body"><p>One or two sentences.</p></div></li>
+          {%- if site.posts.size > 0 %}
+          {% include news-entry.html post=site.posts.first %}
+          {%- endif %}
         </ol>
       </div>
       <div class="card component">

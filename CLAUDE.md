@@ -94,6 +94,12 @@ any write-capable credential in this repo.
   `/news/:year/:month/:day/:title/` permalink.
 - News = `_posts/YYYY-MM-DD-slug.md`, short Markdown, `title` in front matter.
 - Forecast data is fetched client-side by plain ES modules in `assets/js/` (no bundler).
+  `boot.js` is the only module with startup side effects (theme, sample badge); the layout loads it
+  on every page. Keep the others importable in Node: no top-level `document`/`location` access.
+  Shared pieces: `svg.js` (SVG element helper), `day-tile.js` (Saturday/Sunday tiles and sparkline),
+  `signedPts()` in `data.js` for "+3 pts" / "−3 pts" (true minus).
+- Tests: `node --test tests/` (Node's built-in runner, no packages). Add a test when changing
+  parsing, dates, trend words, chart segmentation or distances.
 - Local dev: `LANG=en_US.UTF-8 bundle exec jekyll serve --livereload` (also in `.claude/launch.json`).
   Gems install to `vendor/bundle` (git-ignored, excluded from the build).
 - Deploy: GitHub Pages builds from `main`, repo root.

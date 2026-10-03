@@ -1,8 +1,9 @@
 // Forecast page: run-by-run timeline for one site and weekend, plus the latest 14-day outlook.
 import {
   addDays, dayMonth, describeTrend, isSample, latestIssued, loadForecasts, loadSites, localToday,
-  monthOf, monthsAround, pct, shortDate, toDate, weekendHistory, weekendSaturday, weekendsWithData,
+  monthOf, monthsAround, pct, shortDate, signedPts, toDate, weekendHistory, weekendSaturday, weekendsWithData,
 } from "./data.js";
+import { dayTile } from "./day-tile.js";
 import { el } from "./common.js";
 import { renderTimeline, timelineTable } from "./chart.js";
 import { siteCard } from "./site-card.js";
@@ -91,27 +92,17 @@ function renderStrip(site, selectedSat) {
       el("span", { class: "scale-note" }, "Tap a weekend to chart it")));
 }
 
-/** Two tiles: latest value, trend word, and net change for Saturday and Sunday. */
+/** Two large tiles: latest value, trend word, and net change for Saturday and Sunday. */
 function renderSummary(points, sat) {
-  const tiles = [["sat", "Saturday", sat, "var(--series-sat)"], ["sun", "Sunday", addDays(sat, 1), "var(--series-sun)"]]
-    .map(([key, name, day, color]) => {
-      const values = points.filter((pt) => pt[key]).map((pt) => pt[key].p);
-      const last = values[values.length - 1];
-      const trend = describeTrend(values);
-      let detail;
-      if (!values.length) detail = "Not forecast yet";
-      else if (!trend) detail = `${values.length} run${values.length === 1 ? "" : "s"} so far`;
-      else {
-        const pts = Math.round(trend.net * 100);
-        detail = `${pts > 0 ? "+" : pts < 0 ? "−" : "±"}${Math.abs(pts)} pts over ${values.length} runs`;
-      }
-      return el("div", { class: "sum-tile" },
-        el("div", { class: "label" }, el("i", { class: "key", style: `background:${color}` }), `${name} ${dayMonth(day)}`),
-        el("div", { class: "sum-value" }, values.length ? pct(last) : "–"),
-        trend ? el("div", { class: "sum-trend" }, el("span", { "aria-hidden": "true" }, trend.icon), ` ${trend.word}`) : null,
-        el("div", { class: "sum-detail" }, detail));
-    });
-  $("summary").replaceChildren(...tiles);
+  const days = [["sat", "Saturday", sat, "var(--series-sat)"], ["sun", "Sunday", addDays(sat, 1), "var(--series-sun)"]];
+  $("summary").replaceChildren(...days.map(([key, name, day, color]) => {
+    const values = points.filter((pt) => pt[key]).map((pt) => pt[key].p);
+    const trend = describeTrend(values);
+    const detail = !values.length ? "Not forecast yet"
+      : !trend ? `${values.length} run${values.length === 1 ? "" : "s"} so far`
+      : `${signedPts(trend.net)} over ${values.length} runs`;
+    return dayTile({ size: "large", label: `${name} ${dayMonth(day)}`, color, value: values.at(-1) ?? null, trend, detail });
+  }));
 }
 
 function render() {

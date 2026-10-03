@@ -137,11 +137,25 @@ section { margin-top: 32px; }
 .outlook-card h3 a { color: var(--text); text-decoration: none; }
 .outlook-card h3 a:hover { text-decoration: underline; }
 .days { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-.day { background: var(--surface-2); border-radius: var(--radius-sm); padding: 10px 12px; }
-.day .label { font-size: .8rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
-.day .key { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
-.day .value { font-size: 1.8rem; font-weight: 650; line-height: 1.1; }
-.day .delta { font-size: .8rem; color: var(--text-2); font-variant-numeric: tabular-nums; }
+
+/* Day tile (day-tile.js): compact on the home outlook, large on the forecast summary */
+.day-tile { background: var(--surface-2); border-radius: var(--radius-sm); }
+.day-tile .label { display: flex; align-items: center; gap: 6px; }
+.day-tile .key { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.day-tile .detail { font-variant-numeric: tabular-nums; }
+.day-tile .spark { display: block; width: 100%; height: 30px; margin: 6px 0 4px; overflow: visible; }
+.day-tile .trend { font-weight: 650; color: var(--text); }
+.day-tile .trend span { display: inline-block; width: 1.1em; }
+
+.day-tile.compact { padding: 10px 12px; }
+.day-tile.compact .label { font-size: .8rem; color: var(--muted); }
+.day-tile.compact .value { font-size: 1.8rem; font-weight: 650; line-height: 1.1; }
+.day-tile.compact .detail { font-size: .8rem; color: var(--text-2); }
+
+.day-tile.large { padding: 12px 14px; }
+.day-tile.large .label { font-size: .82rem; color: var(--text-2); }
+.day-tile.large .value { font-size: clamp(2rem, 8vw, 2.8rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; margin: 4px 0 2px; }
+.day-tile.large .detail { font-size: .82rem; color: var(--muted); }
 
 /* Status badges: always icon + text */
 .badge {
@@ -298,7 +312,7 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .site-footer a { color: var(--text-2); }
 
 @media (forced-colors: active) {
-  .day .key, .legend i, .tooltip .tt-row i { forced-color-adjust: none; }
+  .day-tile .key, .legend i, .tooltip .tt-row i { forced-color-adjust: none; }
 }
 
 /* ---------- Home: sky and ridge hero ---------- */
@@ -363,7 +377,6 @@ body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, trans
 .panel-note { font-size: .82rem; color: var(--muted); margin: 14px 2px 0; }
 @media (max-width: 640px) { .raised-panel { margin-top: -40px; padding: 14px; } }
 
-.day .spark { display: block; width: 100%; height: 30px; margin: 6px 0 4px; overflow: visible; }
 
 /* How it works */
 .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
@@ -391,13 +404,6 @@ body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, trans
 
 /* Summary tiles above the chart */
 .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
-.sum-tile { background: var(--surface-2); border-radius: var(--radius-sm); padding: 12px 14px; }
-.sum-tile .label { font-size: .82rem; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
-.sum-tile .key { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
-.sum-value { font-size: clamp(2rem, 8vw, 2.8rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; margin: 4px 0 2px; }
-.sum-trend { font-weight: 650; color: var(--text); }
-.sum-trend span { display: inline-block; width: 1.1em; }
-.sum-detail { font-size: .82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .chart-head h2 { font-size: 1.05rem; margin-bottom: 2px; }
 .chart-head p { margin-bottom: 8px; }
 .raised-panel .legend { padding: 0 0 8px; }
@@ -521,3 +527,5 @@ a.topic-chip:hover { border-color: var(--text-2); }
 .voice-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
 .voice-grid h3 { margin-top: 0; }
 .voice-grid ul { margin: 0; padding-left: 1.1em; }
+.demo-tiles { display: grid; gap: 10px; }
+

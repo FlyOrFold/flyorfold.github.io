@@ -58,6 +58,15 @@ LANG=en_US.UTF-8 bundle exec jekyll serve --livereload
 
 (`LANG` avoids a Sass encoding error in the older Jekyll that GitHub Pages pins.)
 
+## Tests
+
+The pure logic (CSV parsing, dates, weekend history, trend words, line breaks in the chart,
+distances) has tests that use Node's built-in runner, with no packages to install:
+
+```bash
+node --test tests/
+```
+
 ## Posting news
 
 News items are Jekyll posts. Add a file named `_posts/YYYY-MM-DD-short-slug.md`:
