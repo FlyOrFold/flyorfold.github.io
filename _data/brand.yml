@@ -1,0 +1,32 @@
+# Color tokens shown on brand.html. Values are NOT stored here: the page reads them from
+# the live CSS (assets/css/site.css), so this file only names and explains each token.
+- group: Brand
+  tokens:
+    - { token: --ink, name: Ink, use: "Logo tile, primary button, text in light mode" }
+    - { token: --sky, name: Sky, use: "Primary color. Saturday series, forecast-daily pins" }
+    - { token: --canopy, name: Canopy, use: "Accent. Sunday series, glider, timeline dots, step numbers" }
+    - { token: --ridge, name: Ridge, use: "Status: forecast daily. Never a chart series" }
+    - { token: --caution, name: Caution, use: "Status: unverified. Never a chart series" }
+- group: Sky scene
+  tokens:
+    - { token: --sky-top, name: Sky top, use: "Top of the hero gradient and the header on sky pages" }
+    - { token: --sky-mid, name: Sky middle, use: "Middle of the hero gradient" }
+    - { token: --sky-low, name: Sky horizon, use: "Bottom of the gradient, behind the ridges" }
+    - { token: --ridge-far, name: Far ridge, use: "Back ridgeline" }
+    - { token: --ridge-near, name: Near ridge, use: "Front ridgeline" }
+- group: Surfaces and text
+  tokens:
+    - { token: --bg, name: Page, use: "Page background and the ground under the ridges" }
+    - { token: --surface, name: Card, use: "Cards and panels" }
+    - { token: --surface-2, name: Raised, use: "Tiles inside cards, chips, empty calendar cells" }
+    - { token: --line, name: Line, use: "Borders and hairlines" }
+    - { token: --text, name: Text, use: "Headings and body text" }
+    - { token: --text-2, name: Text secondary, use: "Supporting text" }
+    - { token: --muted, name: Muted, use: "Captions, axis labels" }
+    - { token: --link, name: Link, use: "Links" }
+- group: Charts
+  tokens:
+    - { token: --series-sat, name: Saturday, use: "Saturday line, tile key and sparkline (= Sky)" }
+    - { token: --series-sun, name: Sunday, use: "Sunday line, tile key and sparkline (= Canopy)" }
+    - { token: --grid, name: Grid, use: "Chart gridlines" }
+    - { token: --ref, name: Reference, use: "70% reference line" }

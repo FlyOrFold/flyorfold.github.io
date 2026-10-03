@@ -97,8 +97,9 @@ any write-capable credential in this repo.
 - Local dev: `LANG=en_US.UTF-8 bundle exec jekyll serve --livereload` (also in `.claude/launch.json`).
   Gems install to `vendor/bundle` (git-ignored, excluded from the build).
 - Deploy: GitHub Pages builds from `main`, repo root.
-- Brand tokens are CSS custom properties at the top of `assets/css/site.css`, documented on
-  `brand.html`. Chart series colors (Sky, Canopy) were validated for color-blind separation in both
+- Brand tokens are CSS custom properties in `assets/css/site.css`. `brand.html` is a live style
+  guide: swatch values are read from the CSS at runtime, and `_data/brand.yml` only names and
+  explains each token. Add new tokens there so they show up. Chart series colors (Sky, Canopy) were validated for color-blind separation in both
   themes; re-validate if they change.
 - The Sites map uses Leaflet 1.9.4 from cdnjs with SRI hashes, and OpenStreetMap tiles (credit
   line required). It is the only third-party script; keep the integrity hashes if you upgrade it.

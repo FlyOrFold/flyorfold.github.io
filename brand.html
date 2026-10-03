@@ -1,59 +1,150 @@
 ---
 title: Brand
-description: The Fly or Fold mark, colors and type.
+description: The Fly or Fold mark, colors, sky scene, type, components and voice.
+body_class: sky
+scripts:
+  - /assets/js/brand.js
 ---
-<main class="wrap">
-  <h1>Brand</h1>
-  <p class="muted">The Fly or Fold mark, colors and type. Every value here is a CSS token in <code>assets/css/site.css</code>; change it there and the whole site follows.</p>
+<section class="sky-hero sky-compact brand-hero">
+  {% include glider.html %}
+  <div class="wrap hero-inner">
+    <p class="eyebrow">Brand</p>
+    <h1>Fly <span class="or-light">or</span> Fold</h1>
+    <p class="lede">The mark, colors, sky scene, type, components and voice. Colors and components on this page are the live ones, so it can't drift from the site.</p>
+    <nav class="brand-toc" aria-label="On this page">
+      <a href="#mark">Mark</a><a href="#color">Color</a><a href="#sky">Sky scene</a><a href="#type">Type</a><a href="#components">Components</a><a href="#voice">Voice</a>
+    </nav>
+  </div>
+  {% include ridge.html %}
+</section>
 
-  <section aria-labelledby="mark-h">
+<main class="wrap sky-main brand-main">
+  <section class="card raised-panel" id="mark" aria-labelledby="mark-h">
     <h2 id="mark-h">Mark</h2>
     <p>A paraglider canopy over its lines and pilot, on a deep navy tile. The name plays on poker: fly the weekend, or fold and stay home.</p>
     <div class="logo-row">
-      <div class="tile" style="background:#fcfcfb"><img src="assets/img/logo.svg" alt="Fly or Fold logo on light background" width="96" height="96"></div>
-      <div class="tile" style="background:#0b1420"><img src="assets/img/logo.svg" alt="Fly or Fold logo on dark background" width="96" height="96"></div>
-      <div class="tile" style="background:var(--surface)"><img src="assets/img/logo.svg" alt="Favicon size" width="32" height="32"> <img src="assets/img/logo.svg" alt="Favicon size" width="16" height="16"></div>
+      <figure class="logo-tile light"><img src="{{ '/assets/img/logo.svg' | relative_url }}" alt="Fly or Fold logo on a light background" width="96" height="96"><figcaption>On light</figcaption></figure>
+      <figure class="logo-tile dark"><img src="{{ '/assets/img/logo.svg' | relative_url }}" alt="Fly or Fold logo on a dark background" width="96" height="96"><figcaption>On dark</figcaption></figure>
+      <figure class="logo-tile sizes"><div><img src="{{ '/assets/img/logo.svg' | relative_url }}" alt="" width="48" height="48"><img src="{{ '/assets/img/logo.svg' | relative_url }}" alt="" width="32" height="32"><img src="{{ '/assets/img/logo.svg' | relative_url }}" alt="" width="16" height="16"></div><figcaption>48, 32, 16 px</figcaption></figure>
+      <figure class="logo-tile wordmark"><div class="brand big"><img src="{{ '/assets/img/logo.svg' | relative_url }}" alt="" width="44" height="44"><span>Fly <span class="or">or</span> Fold</span></div><figcaption>Wordmark: “or” in a lighter weight and muted color</figcaption></figure>
     </div>
-    <p class="small muted" style="margin-top:10px">Files: <a href="assets/img/logo.svg">logo.svg</a>, <a href="favicon.svg">favicon.svg</a>, <a href="favicon-32.png">favicon-32.png</a>, <a href="apple-touch-icon.png">apple-touch-icon.png</a> (180 px, square), <a href="assets/img/icon-192.png">icon-192.png</a>, <a href="assets/img/icon-512.png">icon-512.png</a>. Wordmark: “Fly <span class="muted">or</span> Fold”, with “or” in a lighter weight.</p>
-  </section>
-
-  <section aria-labelledby="color-h">
-    <h2 id="color-h">Color</h2>
-    <h3>Brand</h3>
-    <div class="swatches">
-      <div class="swatch"><div class="chip" style="background:#10233a"></div><div class="info"><b>Ink</b><br><code>--ink #10233a</code><br>Text, logo tile, primary button</div></div>
-      <div class="swatch"><div class="chip" style="background:#2f7fd0"></div><div class="info"><b>Sky</b><br><code>--sky #2f7fd0</code><br>Primary color; Saturday series. Dark: <code>#4a90dc</code></div></div>
-      <div class="swatch"><div class="chip" style="background:#e0662a"></div><div class="info"><b>Canopy</b><br><code>--canopy #e0662a</code><br>Accent; Sunday series. Dark: <code>#de6a2c</code></div></div>
-      <div class="swatch"><div class="chip" style="background:#2e7d5b"></div><div class="info"><b>Ridge</b><br><code>--ridge #2e7d5b</code><br>Status: forecast active. Dark: <code>#4fae84</code></div></div>
-      <div class="swatch"><div class="chip" style="background:#b7791f"></div><div class="info"><b>Caution</b><br><code>--caution #b7791f</code><br>Status: unverified. Dark: <code>#d9a441</code></div></div>
-    </div>
-    <h3 style="margin-top:20px">Surfaces</h3>
-    <div class="swatches">
-      <div class="swatch"><div class="chip" style="background:#f4f6f9"></div><div class="info"><b>Page</b><br><code>--bg</code> #f4f6f9 / #0b1420</div></div>
-      <div class="swatch"><div class="chip" style="background:#fcfcfb"></div><div class="info"><b>Card</b><br><code>--surface</code> #fcfcfb / #0f1a28</div></div>
-      <div class="swatch"><div class="chip" style="background:#eaeef3"></div><div class="info"><b>Raised</b><br><code>--surface-2</code> #eaeef3 / #172434</div></div>
-      <div class="swatch"><div class="chip" style="background:#d8dee6"></div><div class="info"><b>Line</b><br><code>--line</code> #d8dee6 / #243447</div></div>
-    </div>
-    <h3 style="margin-top:20px">Rules</h3>
-    <ul>
-      <li>Sky and Canopy are the two chart series (Saturday, Sunday). The pair is checked for color-blind separation in both themes; keep them in that order and never reuse them as status colors.</li>
-      <li>Text is always Ink, or the secondary and muted text tokens, never a series color. A colored line or dot beside the text carries identity.</li>
-      <li>Status badges always pair color with a text label.</li>
-      <li>Dark mode has its own tuned steps; it is not an automatic inversion.</li>
+    <h3>Files</h3>
+    <ul class="file-list">
+      <li><a href="{{ '/assets/img/logo.svg' | relative_url }}" download>logo.svg</a> <span class="muted">source, any size</span></li>
+      <li><a href="{{ '/favicon.svg' | relative_url }}" download>favicon.svg</a> <span class="muted">browser tab</span></li>
+      <li><a href="{{ '/favicon-32.png' | relative_url }}" download>favicon-32.png</a> <span class="muted">older browsers</span></li>
+      <li><a href="{{ '/apple-touch-icon.png' | relative_url }}" download>apple-touch-icon.png</a> <span class="muted">180 px, square corners (iOS rounds them)</span></li>
+      <li><a href="{{ '/assets/img/icon-192.png' | relative_url }}" download>icon-192.png</a>, <a href="{{ '/assets/img/icon-512.png' | relative_url }}" download>icon-512.png</a> <span class="muted">home-screen app icons</span></li>
     </ul>
   </section>
 
-  <section aria-labelledby="type-h">
+  <section id="color" aria-labelledby="color-h">
+    <div class="section-head">
+      <h2 id="color-h">Color</h2>
+      <span class="muted small" id="theme-note">Showing the light theme. Use the moon button to see dark.</span>
+    </div>
+    {%- for group in site.data.brand %}
+    <h3 class="swatch-group">{{ group.group }}</h3>
+    <div class="swatches">
+      {%- for t in group.tokens %}
+      <button type="button" class="swatch" data-token="{{ t.token }}" aria-label="{{ t.name }}, copy hex value">
+        <span class="chip-fill" style="background: var({{ t.token }})"></span>
+        <span class="info"><b>{{ t.name }}</b><code class="hex">&nbsp;</code><code class="tok">{{ t.token }}</code><span class="use">{{ t.use }}</span></span>
+      </button>
+      {%- endfor %}
+    </div>
+    {%- endfor %}
+    <p class="small muted" id="copy-status" role="status" aria-live="polite"></p>
+    <h3>Rules</h3>
+    <ul>
+      <li>Sky and Canopy are the two chart series, Saturday then Sunday. The pair is checked for color-blind separation in both themes. Keep that order and never reuse them as status colors.</li>
+      <li>Ridge and Caution are status colors only, always with an icon and a word (✓ Forecast daily, ⚠ Unverified).</li>
+      <li>Text is always a text token, never a series color. A colored line, dot or swatch beside it carries identity.</li>
+      <li>Dark mode has its own tuned steps; it is not an automatic inversion. The one exception is the map tiles, which are inverted because OpenStreetMap has no dark style.</li>
+    </ul>
+  </section>
+
+  <section id="sky" aria-labelledby="sky-h">
+    <h2 id="sky-h">Sky scene</h2>
+    <p>Every page opens on the same scene: a sky gradient (top, middle, horizon), a faint canopy-orange glow low on the right, two ridgelines, and the page color as the ground. Content panels overlap the ridge so the page reads as one piece.</p>
+    <div class="scene-demo" aria-hidden="true">
+      <div class="sky-hero scene-mini">
+        {% include glider.html %}
+        <div class="scene-labels"><span>Sky top</span><span>Sky middle</span><span>Horizon + glow</span></div>
+        {% include ridge.html %}
+      </div>
+    </div>
+    <ul class="small">
+      <li><b>Full hero</b> (home): headline, glider drifting slowly (stops for reduced motion), tall ridge.</li>
+      <li><b>Compact band</b> (all other pages): <code>body_class: sky</code> plus <code>.sky-hero.sky-compact</code>, a short ridge, and a <code>.raised-panel</code> overlapping it.</li>
+      <li>The ridge is <code>_includes/ridge.html</code>; the glider is <code>_includes/glider.html</code>.</li>
+    </ul>
+  </section>
+
+  <section id="type" aria-labelledby="type-h">
     <h2 id="type-h">Type</h2>
-    <p>The system UI font stack, so pages load fast on a phone at the launch with one bar of signal. Headings 600–700 weight, body 16 px. Numbers in tables and axes use tabular figures.</p>
+    <p>The system UI font stack, so pages load fast on a phone at the launch with one bar of signal.</p>
+    <div class="card type-specimen">
+      <p class="eyebrow">Eyebrow · 0.8 rem, caps, tracked</p>
+      <p class="type-h1">Hero headline</p>
+      <p class="type-h2">Section heading</p>
+      <p>Body text at 16 px. Plain sentences that say what a number means.</p>
+      <p class="muted small">Caption and supporting text in the muted token.</p>
+      <p class="type-num">94% <span class="muted small">big numbers use proportional figures; tables and axes use tabular ones</span></p>
+    </div>
   </section>
 
-  <section aria-labelledby="voice-h">
+  <section id="components" aria-labelledby="components-h">
+    <h2 id="components-h">Components</h2>
+    <div class="component-grid">
+      <div class="card component">
+        <h3>Buttons</h3>
+        <div class="demo-row"><a class="btn" href="#components">Primary</a><a class="btn secondary" href="#components">Secondary</a></div>
+        <div class="demo-row on-sky-demo sky-hero"><span class="cta"><a class="btn on-sky" href="#components">On sky</a></span></div>
+      </div>
+      <div class="card component">
+        <h3>Status badges</h3>
+        <div class="demo-row"><span class="badge ok">✓ Forecast daily</span><span class="badge warn">⚠ Unverified</span><span class="badge off">○ Not forecast yet</span><span class="badge sample">Sample data</span></div>
+        <p class="small muted">Always an icon plus a word.</p>
+      </div>
+      <div class="card component">
+        <h3>Chips</h3>
+        <div class="demo-row"><span class="topic-chip">Site</span><span class="topic-chip">Scoring</span></div>
+        <div class="demo-row"><button type="button" class="chip" aria-pressed="true">All</button><button type="button" class="chip" aria-pressed="false">Data</button></div>
+        <p class="small muted">Topic labels, and filter buttons with a pressed state.</p>
+      </div>
+      <div class="card component">
+        <h3>Summary tile</h3>
+        <div class="sum-tile">
+          <div class="label"><i class="key" style="background: var(--series-sat)"></i>Saturday Oct 3</div>
+          <div class="sum-value">94%</div>
+          <div class="sum-trend"><span aria-hidden="true">↗</span> Rising</div>
+          <div class="sum-detail">+52 pts over 13 runs</div>
+        </div>
+        <p class="small muted">Trend words describe the forecast. They never say whether to go.</p>
+      </div>
+      <div class="card component">
+        <h3>Timeline</h3>
+        <ol class="timeline">
+          <li class="tl-item"><div class="tl-meta"><time>Fri Oct 2</time><span class="topic-chip">Website</span></div><h3>News item title</h3><div class="tl-body"><p>One or two sentences.</p></div></li>
+        </ol>
+      </div>
+      <div class="card component">
+        <h3>Wind dial and map pins</h3>
+        <div class="demo-row"><div class="dial" id="demo-dial"></div>
+          <div class="map-legend pin-demo"><span><i class="pin-key active"></i>Forecast daily</span><span><i class="pin-key"></i>Not forecast yet</span><span><i class="pin-key home"></i>Your starting point</span></div>
+        </div>
+        <p class="small muted">The dial shades where the wind blows <em>from</em>; this one wraps through north (340°–20°).</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="voice" aria-labelledby="voice-h">
     <h2 id="voice-h">Voice</h2>
-    <ul>
-      <li>Plain and specific. Say what the number means: “chance of a flyable day”, not “flyability score”.</li>
-      <li>A planning aid, not a go signal. Never write “safe to fly” or “go/no-go” next to a forecast. The pilot makes the call on site.</li>
-      <li>Facts with sources. Site limits show where they came from and whether they are verified.</li>
-    </ul>
+    <div class="voice-grid">
+      <div class="card"><h3>Say</h3><ul><li>“Chance of a flyable day”</li><li>“Forecast for a model grid cell about 25 km across”</li><li>“Rising”, “Steady”, “Unsettled”</li><li>“Unverified: confirm with the club”</li></ul></div>
+      <div class="card"><h3>Don't say</h3><ul><li>“Safe to fly”, “go/no-go”, “green light”</li><li>“Flyability score”</li><li>Opinions or reviews of schools and operators</li><li>A wind limit with no source</li></ul></div>
+    </div>
+    <p class="small muted">A planning aid, not a go signal. The pilot makes the call on site.</p>
   </section>
 </main>
