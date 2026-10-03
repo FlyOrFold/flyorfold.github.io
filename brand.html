@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand · Fly or Fold</title>
+<meta name="description" content="The Fly or Fold mark, colors and type.">
+<meta name="theme-color" content="#10233a">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="assets/img/logo.svg" alt="" width="32" height="32"><span>Fly <span class="or">or</span> Fold</span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="forecast.html">Forecast</a>
+      <a href="sites.html">Sites</a>
+      <a href="news.html">News</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch theme"></button>
+  </div>
+</header>
+<main class="wrap">
+  <h1>Brand</h1>
+  <p class="muted">The Fly or Fold mark, colors and type. Every value here is a CSS token in <code>assets/css/site.css</code>; change it there and the whole site follows.</p>
+
+  <section aria-labelledby="mark-h">
+    <h2 id="mark-h">Mark</h2>
+    <p>A paraglider canopy over its lines and pilot, on a deep navy tile. The name plays on poker: fly the weekend, or fold and stay home.</p>
+    <div class="logo-row">
+      <div class="tile" style="background:#fcfcfb"><img src="assets/img/logo.svg" alt="Fly or Fold logo on light background" width="96" height="96"></div>
+      <div class="tile" style="background:#0b1420"><img src="assets/img/logo.svg" alt="Fly or Fold logo on dark background" width="96" height="96"></div>
+      <div class="tile" style="background:var(--surface)"><img src="assets/img/logo.svg" alt="Favicon size" width="32" height="32"> <img src="assets/img/logo.svg" alt="Favicon size" width="16" height="16"></div>
+    </div>
+    <p class="small muted" style="margin-top:10px">Files: <a href="assets/img/logo.svg">logo.svg</a>, <a href="favicon.svg">favicon.svg</a>, <a href="favicon-32.png">favicon-32.png</a>, <a href="apple-touch-icon.png">apple-touch-icon.png</a> (180 px, square), <a href="assets/img/icon-192.png">icon-192.png</a>, <a href="assets/img/icon-512.png">icon-512.png</a>. Wordmark: “Fly <span class="muted">or</span> Fold”, with “or” in a lighter weight.</p>
+  </section>
+
+  <section aria-labelledby="color-h">
+    <h2 id="color-h">Color</h2>
+    <h3>Brand</h3>
+    <div class="swatches">
+      <div class="swatch"><div class="chip" style="background:#10233a"></div><div class="info"><b>Ink</b><br><code>--ink #10233a</code><br>Text, logo tile, primary button</div></div>
+      <div class="swatch"><div class="chip" style="background:#2f7fd0"></div><div class="info"><b>Sky</b><br><code>--sky #2f7fd0</code><br>Primary color; Saturday series. Dark: <code>#4a90dc</code></div></div>
+      <div class="swatch"><div class="chip" style="background:#e0662a"></div><div class="info"><b>Canopy</b><br><code>--canopy #e0662a</code><br>Accent; Sunday series. Dark: <code>#de6a2c</code></div></div>
+      <div class="swatch"><div class="chip" style="background:#2e7d5b"></div><div class="info"><b>Ridge</b><br><code>--ridge #2e7d5b</code><br>Status: forecast active. Dark: <code>#4fae84</code></div></div>
+      <div class="swatch"><div class="chip" style="background:#b7791f"></div><div class="info"><b>Caution</b><br><code>--caution #b7791f</code><br>Status: unverified. Dark: <code>#d9a441</code></div></div>
+    </div>
+    <h3 style="margin-top:20px">Surfaces</h3>
+    <div class="swatches">
+      <div class="swatch"><div class="chip" style="background:#f4f6f9"></div><div class="info"><b>Page</b><br><code>--bg</code> #f4f6f9 / #0b1420</div></div>
+      <div class="swatch"><div class="chip" style="background:#fcfcfb"></div><div class="info"><b>Card</b><br><code>--surface</code> #fcfcfb / #0f1a28</div></div>
+      <div class="swatch"><div class="chip" style="background:#eaeef3"></div><div class="info"><b>Raised</b><br><code>--surface-2</code> #eaeef3 / #172434</div></div>
+      <div class="swatch"><div class="chip" style="background:#d8dee6"></div><div class="info"><b>Line</b><br><code>--line</code> #d8dee6 / #243447</div></div>
+    </div>
+    <h3 style="margin-top:20px">Rules</h3>
+    <ul>
+      <li>Sky and Canopy are the two chart series (Saturday, Sunday). The pair is checked for color-blind separation in both themes; keep them in that order and never reuse them as status colors.</li>
+      <li>Text is always Ink, or the secondary and muted text tokens, never a series color. A colored line or dot beside the text carries identity.</li>
+      <li>Status badges always pair color with a text label.</li>
+      <li>Dark mode has its own tuned steps; it is not an automatic inversion.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="type-h">
+    <h2 id="type-h">Type</h2>
+    <p>The system UI font stack, so pages load fast on a phone at the launch with one bar of signal. Headings 600–700 weight, body 16 px. Numbers in tables and axes use tabular figures.</p>
+  </section>
+
+  <section aria-labelledby="voice-h">
+    <h2 id="voice-h">Voice</h2>
+    <ul>
+      <li>Plain and specific. Say what the number means: “chance of a flyable day”, not “flyability score”.</li>
+      <li>A planning aid, not a go signal. Never write “safe to fly” or “go/no-go” next to a forecast. The pilot makes the call on site.</li>
+      <li>Facts with sources. Site limits show where they came from and whether they are verified.</li>
+    </ul>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <p><strong>Planning aid only.</strong> Forecasts are for a weather-model grid cell (about 25 km across), not the launch itself. Check live conditions on site and make your own call before flying.</p>
+    <p>Weather data by <a href="https://open-meteo.com/">Open-Meteo.com</a>, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Daily forecast log: <a href="https://github.com/FlyOrFold/forecast-log">FlyOrFold/forecast-log</a>.</p>
+    <p><a href="brand.html">Brand and colors</a> · <a href="https://github.com/FlyOrFold/flyorfold.github.io">Site source</a></p>
+  </div>
+</footer>
+<script type="module" src="assets/js/common.js"></script>
+</body>
+</html>
