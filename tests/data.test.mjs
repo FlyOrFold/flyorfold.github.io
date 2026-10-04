@@ -130,6 +130,25 @@ test("loadSites: active only when every required column is set and skip isn't ye
   assert.deepEqual(sites[0].dirRanges, [[340, 20]]);
   assert.equal(sites[1].timezone, null);
   assert.equal(sites[1].gustMax, null);
+  assert.equal(sites[0].pgeUrl, null);
+  assert.equal(sites[0].infoUrl, null);
+});
+
+test("loadSites: Paragliding Earth and info links only from a site number and an http(s) URL", async () => {
+  const header = "id,name,lat,lon,timezone,dir_ranges,speed_min,speed_max,gust_max,rain_mm_max,fly_start,fly_end,min_hours,skip,notes,pge_id,info_url";
+  stubFetch({
+    "sites.csv": [header,
+      "a,A,41,-81,,,,,,,,,,,,9908,https://example.org/site",
+      "b,B,41,-81,,,,,,,,,,,,,",
+      "c,C,41,-81,,,,,,,,,,,,99x,javascript:alert(1)",
+    ].join("\n"),
+  });
+  const sites = await loadSites();
+  assert.deepEqual(sites.map((s) => [s.pgeUrl, s.infoUrl]), [
+    ["https://www.paraglidingearth.com/?site=9908", "https://example.org/site"],
+    [null, null],
+    [null, null],
+  ]);
 });
 
 test("loadForecasts: parses numbers and skips months that don't exist yet", async () => {

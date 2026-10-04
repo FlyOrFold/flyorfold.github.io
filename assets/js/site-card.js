@@ -64,11 +64,20 @@ function mapLink(site) {
   return el("a", { href: `https://www.openstreetmap.org/?mlat=${site.lat}&mlon=${site.lon}#map=13/${site.lat}/${site.lon}` }, "Open in map");
 }
 
+/** Map, Paragliding Earth and local site info links; blank ones are left out. */
+function siteLinks(site) {
+  return [
+    mapLink(site),
+    site.pgeUrl ? el("a", { href: site.pgeUrl }, "Paragliding Earth") : null,
+    site.infoUrl ? el("a", { href: site.infoUrl }, "Local site info") : null,
+  ].filter(Boolean);
+}
+
 /** Full card for a forecast site. */
 export function siteCard(site, { heading = "h3", distance = null, forecastLink = false } = {}) {
   const actions = [
     forecastLink ? el("a", { class: "btn small-btn", href: withSample(`forecast.html?site=${encodeURIComponent(site.id)}`) }, "See forecast") : null,
-    mapLink(site),
+    ...siteLinks(site),
   ].filter(Boolean);
   return el("article", { class: "card site-card", id: site.id, tabindex: "-1" },
     el(heading, {}, site.name),
@@ -88,5 +97,5 @@ export function siteRow(site, { distance = null } = {}) {
       badges(site, distance),
       el("p", { class: "small muted", style: "margin:0 0 4px" }, missing),
       site.notes ? el("details", { class: "site-row-notes" }, el("summary", {}, "Sources and notes"), el("p", {}, site.notes)) : null,
-      mapLink(site)));
+      el("div", { class: "site-links" }, ...siteLinks(site))));
 }

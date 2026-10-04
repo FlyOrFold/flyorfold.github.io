@@ -440,6 +440,7 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .site-row .meta { margin-bottom: 6px; }
 .site-row-body { min-width: 0; flex: 1; }
 .site-row-notes summary { padding: 2px 0; font-size: .85rem; }
+.site-links { display: flex; gap: 4px 14px; flex-wrap: wrap; }
 .site-row-notes p { margin: 4px 0 6px; color: var(--text-2); font-size: .85rem; }
 
 .site-card:focus, .site-row:focus { outline: none; }

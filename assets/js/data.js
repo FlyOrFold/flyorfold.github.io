@@ -54,6 +54,10 @@ export function parseDirRanges(s) {
     .map((part) => part.split("-").map((n) => Number(n.trim())));
 }
 
+// Optional link columns. Anything that isn't a site number or an http(s) URL is dropped, not linked.
+const pgeId = (s) => (/^\d+$/.test(s ?? "") ? s : null);
+const webUrl = (s) => (/^https?:\/\//i.test(s ?? "") ? s : null);
+
 export async function loadSites() {
   const text = await fetchText("sites.csv");
   if (text == null) throw new Error("sites.csv not found");
@@ -76,6 +80,8 @@ export async function loadSites() {
       flyEnd: num("fly_end"),
       minHours: num("min_hours"),
       notes: r.notes,
+      pgeUrl: pgeId(r.pge_id) && `https://www.paraglidingearth.com/?site=${r.pge_id}`,
+      infoUrl: webUrl(r.info_url),
       skipped,
       missing,
       active: !skipped && missing.length === 0,
