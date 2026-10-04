@@ -26,8 +26,8 @@ const isDark = () => document.documentElement.dataset.scheme === "dark";
 function paint() {
   for (const s of swatches) s.querySelector(".hex").textContent = resolve(s.dataset.token);
   document.getElementById("theme-note").textContent = isDark()
-    ? "Showing the dark theme. Use the sun button to see light."
-    : "Showing the light theme. Use the moon button to see dark.";
+    ? "Showing the dark theme. Switch your system to light mode to see light."
+    : "Showing the light theme. Switch your system to dark mode to see dark.";
 }
 
 for (const s of swatches) {

@@ -4,8 +4,7 @@
    Later sections may rely on overriding earlier ones at equal specificity (e.g. .raised-panel
    and .outlook-card after .card), so keep new rules in the section they belong to.
 
-   Every colour is light-dark(light value, dark value). The theme follows the system setting,
-   and the header button pins it via data-theme on <html>, which only switches color-scheme. */
+   Every colour is light-dark(light value, dark value). The theme follows the system setting. */
 
 /* ==========================================================================
    Tokens
@@ -60,8 +59,6 @@
   --gutter: 16px;
   --maxw: 960px;
 }
-:root[data-theme="light"] { color-scheme: light; }
-:root[data-theme="dark"] { color-scheme: dark; }
 
 /* ==========================================================================
    Base
@@ -129,14 +126,8 @@ section { margin-top: 32px; }
 }
 .nav a:hover { background: var(--surface-2); }
 .nav a[aria-current="page"] { color: var(--text); background: var(--surface-2); font-weight: 600; }
-.theme-toggle {
-  border: 1px solid var(--line); background: transparent; color: var(--text-2);
-  width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: grid; place-items: center;
-}
-.theme-toggle svg { width: 18px; height: 18px; }
 @media (max-width: 560px) {
   .nav { order: 3; width: 100%; margin: 0 0 8px; justify-content: space-between; }
-  .theme-toggle { margin-left: auto; }
 }
 
 /* Footer */
@@ -169,7 +160,6 @@ body.sky .site-header { background: var(--sky-top); border-bottom-color: transpa
 body.sky .nav a { color: var(--text); }
 body.sky .nav a:hover,
 body.sky .nav a[aria-current="page"] { background: var(--on-sky-btn); }
-body.sky .theme-toggle { border-color: color-mix(in srgb, var(--text) 25%, transparent); color: var(--text); }
 
 .sky-hero {
   position: relative;
