@@ -104,3 +104,9 @@ For print in a single ink (poker chips, stamps, stickers), use `assets/img/logo-
 
 See `CLAUDE.md`. In short: this is a planning aid, never a go signal; site limits show their source
 and are marked unverified until confirmed; no personal contact details; credit Open-Meteo.
+
+## License
+
+Code is under the [MIT License](LICENSE). The flyorfold name and logo are not covered by it; please
+don't use them for a fork in a way that suggests it is this project. Forecast data shown on the site
+comes from [FlyOrFold/forecast-log](https://github.com/FlyOrFold/forecast-log) and is licensed there.
