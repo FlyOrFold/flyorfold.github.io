@@ -107,6 +107,8 @@ and are marked unverified until confirmed; no personal contact details; credit O
 
 ## License
 
-Code is under the [MIT License](LICENSE). The flyorfold name and logo are not covered by it; please
-don't use them for a fork in a way that suggests it is this project. Forecast data shown on the site
-comes from [FlyOrFold/forecast-log](https://github.com/FlyOrFold/forecast-log) and is licensed there.
+Code is under the [MIT License](LICENSE). The flyorfold name, logo and icons
+(`assets/img/logo*.svg`, `assets/img/icon-*.png`, `favicon.svg`, `favicon-32.png` and
+`apple-touch-icon.png`) are not licensed under it. All rights reserved; please don't use them for a
+fork in a way that suggests it is this project. Forecast data shown on the site comes from
+[FlyOrFold/forecast-log](https://github.com/FlyOrFold/forecast-log) and is licensed there.
