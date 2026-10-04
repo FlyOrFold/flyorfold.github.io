@@ -59,17 +59,23 @@ function badges(site, distance) {
     distance ? el("span", { class: "distance", title: "Straight-line distance, not driving distance" }, `${distance} straight line`) : null);
 }
 
+/** Off-site link: opens in a new tab, with an icon and a screen-reader note saying so. */
+function extLink(href, text) {
+  return el("a", { href, class: "ext", target: "_blank", rel: "noopener" },
+    text, el("span", { class: "visually-hidden" }, " (opens in a new tab)"));
+}
+
 function mapLink(site) {
   if (site.lat == null || site.lon == null) return null;
-  return el("a", { href: `https://www.openstreetmap.org/?mlat=${site.lat}&mlon=${site.lon}#map=13/${site.lat}/${site.lon}` }, "Open in map");
+  return extLink(`https://www.openstreetmap.org/?mlat=${site.lat}&mlon=${site.lon}#map=13/${site.lat}/${site.lon}`, "Open in map");
 }
 
 /** Map, Paragliding Earth and local site info links; blank ones are left out. */
 function siteLinks(site) {
   return [
     mapLink(site),
-    site.pgeUrl ? el("a", { href: site.pgeUrl }, "Paragliding Earth") : null,
-    site.infoUrl ? el("a", { href: site.infoUrl }, "Local site info") : null,
+    site.pgeUrl ? extLink(site.pgeUrl, "Paragliding Earth") : null,
+    site.infoUrl ? extLink(site.infoUrl, "Local site info") : null,
   ].filter(Boolean);
 }
 
