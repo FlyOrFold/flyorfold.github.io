@@ -2,6 +2,7 @@
 import { loadSites } from "./data.js";
 import { el } from "./common.js";
 import { siteCard, siteRow } from "./site-card.js";
+import { byName, getHomeSites, setHomeSite } from "./home-sites.js";
 import { clearHome, distanceLabel, getHome, parseCoords, setPoint, useMyLocation } from "./location.js";
 
 const $ = (id) => document.getElementById(id);
@@ -9,12 +10,16 @@ let sites = [];
 
 function renderLists() {
   const home = getHome();
-  const active = sites.filter((s) => s.active);
-  const pending = sites.filter((s) => !s.active);
+  const active = sites.filter((s) => s.active).sort(byName);
+  const pending = sites.filter((s) => !s.active).sort(byName);
+  const picked = getHomeSites();
   $("sites-count").textContent =
     `${active.length} site${active.length === 1 ? "" : "s"} forecast daily, ${pending.length} waiting on limits.`;
   $("active-sites").replaceChildren(...active.map((s) =>
-    siteCard(s, { heading: "h3", distance: distanceLabel(home, s), forecastLink: true })));
+    siteCard(s, {
+      heading: "h3", distance: distanceLabel(home, s), forecastLink: true,
+      onHome: picked.has(s.id), onToggle: (on) => setHomeSite(s.id, on),
+    })));
   $("pending-sites").replaceChildren(...pending.map((s) => siteRow(s, { distance: distanceLabel(home, s) })));
 }
 

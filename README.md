@@ -12,9 +12,9 @@ modules in `assets/js/` that run in the browser.
 
 | Page | What it shows |
 |---|---|
-| `index.html` | Landing page: a card per site (nearest first, with straight-line distance, once you use your location) with a today tile and a two-week strip (3 days back, 10 ahead) of each day's newest forecast, how it works, latest news |
+| `index.html` | Landing page: a card per site (the ones ticked on the Sites page, else the 6 nearest, else 6 by name) with distance, a today tile and a two-week strip (3 days back, 10 ahead) of each day's newest forecast, how it works, latest news |
 | `forecast.html` | Timeline for one site and day, optionally compared with a second day (`?site=<id>&day=YYYY-MM-DD&compare=YYYY-MM-DD`), the two-week strip, and the site's limits |
-| `sites.html` | Every row of the site list, with limits, sources and whether it is forecast; set a starting point (your location, a map pick or typed coordinates) for distances |
+| `sites.html` | Every row of the site list, by name, with limits, sources and whether it is forecast; tick sites to show on the home page; set a starting point (your location, a map pick or typed coordinates) for distances |
 | `news.html` | All news items (posts), with an RSS feed at `/news/feed.xml` |
 | `brand.html` | Logo, color tokens, type and voice rules |
 

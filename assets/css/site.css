@@ -455,6 +455,9 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .limits dd { margin: 0; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .limits dd.unset { font-weight: 400; color: var(--muted); font-style: italic; }
 .site-notes { font-size: .85rem; color: var(--text-2); border-top: 1px solid var(--line); padding-top: 10px; margin: 0; }
+.home-toggle { display: flex; align-items: center; gap: 8px; font-size: .9rem; color: var(--text-2); border-top: 1px solid var(--line); padding-top: 10px; cursor: pointer; }
+.home-toggle input { width: 18px; height: 18px; margin: 0; accent-color: var(--sky); }
+.home-pick-note { margin: 0 0 12px; }
 .site-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: auto; font-size: .9rem; }
 @media (max-width: 420px) {
   .site-body { gap: 12px; }

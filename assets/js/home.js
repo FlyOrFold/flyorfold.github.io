@@ -1,6 +1,6 @@
-// Home page, one card per site (nearest first once the viewer sets a starting point): distance,
-// a today tile (latest value, a line of every run, change since the last run) and a two-week strip
-// of each day's newest forecast; each day links to its timeline.
+// Home page, one card per chosen site (see home-sites.js), nearest first once the viewer sets a
+// starting point: distance, a today tile (latest value, a line of every run, change since the last
+// run) and a two-week strip of each day's newest forecast; each day links to its timeline.
 import {
   dayHistory, dayMonth, dayWindow, isSample, latestByTarget, latestIssued, loadForecasts, loadSites, localToday,
   monthsAround, shortDate, signedPts,
@@ -8,7 +8,8 @@ import {
 import { el, withSample } from "./common.js";
 import { dayTile } from "./day-tile.js";
 import { dayStrip, stripScale } from "./day-strip.js";
-import { byDistance, clearHome, distanceLabel, getHome, useMyLocation } from "./location.js";
+import { clearHome, distanceLabel, getHome, useMyLocation } from "./location.js";
+import { HOME_SITES_KEY, HOME_SITE_COUNT, chooseHomeSites, getHomeSites } from "./home-sites.js";
 
 /** Compact tile for today: newest value, a sparkline of every run, and the change since the run before. */
 function todayTile(rows, siteId, today) {
@@ -32,11 +33,15 @@ const meta = $("outlook-meta");
 const today = localToday();
 const days = dayWindow(today);
 
-/** Cards for the sites in the latest run, nearest first once a starting point is set. */
+/**
+ * Cards for the sites in the latest run: the ones picked on the Sites page, else the
+ * HOME_SITE_COUNT nearest, else the first HOME_SITE_COUNT by name.
+ */
 function renderCards(sites, rows) {
   const home = getHome();
+  const { sites: shown } = chooseHomeSites(sites, getHomeSites(), home, HOME_SITE_COUNT);
   const link = (s, day) => withSample(`forecast.html?site=${encodeURIComponent(s.id)}&day=${day}`);
-  outlook.replaceChildren(...byDistance(home, sites).map((s) => {
+  outlook.replaceChildren(...shown.map((s) => {
     const distance = distanceLabel(home, s);
     return el("article", { class: "card outlook-card" },
       el("div", { class: "outlook-head" },
@@ -61,7 +66,6 @@ function renderHomeControls() {
   $("clear-home").hidden = !home;
   $("home-status").textContent = "";
   meta.textContent = outlookMeta;
-  $("outlook-sub").textContent = `Chance of a flyable day, newest forecast for each day.${home ? " Nearest site first." : ""}`;
 }
 
 function setupHomeControls() {
@@ -106,6 +110,8 @@ async function renderOutlook() {
   renderCards(shown, rows);
   outlook.after(stripScale("Tap a day to see how its forecast changed"));
   document.addEventListener("homechange", () => renderCards(shown, rows));
+  // Picks made on the Sites page in another tab.
+  window.addEventListener("storage", (e) => { if (e.key === HOME_SITES_KEY) renderCards(shown, rows); });
 }
 
 setupHomeControls();

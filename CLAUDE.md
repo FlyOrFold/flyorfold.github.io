@@ -138,3 +138,6 @@ any write-capable credential in this repo.
   ways and the privacy note). It lives only in that browser's
   localStorage, rounded to 0.1°, and must never go into a URL, a request, or the repo. That is why
   there is no place-name search: it would send the typed text to a geocoding service.
+- The viewer can tick "Show on home page" on forecast-daily site cards (`assets/js/home-sites.js`).
+  The picks live only in localStorage. With no picks the home page shows the `HOME_SITE_COUNT` (6)
+  nearest sites, or the first 6 by name without a starting point. Sites page lists are by name.

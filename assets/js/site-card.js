@@ -79,8 +79,19 @@ function siteLinks(site) {
   ].filter(Boolean);
 }
 
-/** Full card for a forecast site. */
-export function siteCard(site, { heading = "h3", distance = null, forecastLink = false } = {}) {
+/** "Show on home page" checkbox; `onHome` is its state, `onToggle(checked)` runs on change. */
+function homeToggle(site, onHome, onToggle) {
+  const box = el("input", { type: "checkbox", checked: onHome });
+  box.addEventListener("change", () => onToggle(box.checked));
+  return el("label", { class: "home-toggle" }, box, "Show on home page",
+    el("span", { class: "visually-hidden" }, `: ${site.name}`));
+}
+
+/**
+ * Full card for a forecast site. Pass `onToggle` (and `onHome`) to add the
+ * "Show on home page" checkbox.
+ */
+export function siteCard(site, { heading = "h3", distance = null, forecastLink = false, onHome = false, onToggle = null } = {}) {
   const actions = [
     forecastLink ? el("a", { class: "btn small-btn", href: withSample(`forecast.html?site=${encodeURIComponent(site.id)}`) }, "See forecast") : null,
     ...siteLinks(site),
@@ -90,7 +101,8 @@ export function siteCard(site, { heading = "h3", distance = null, forecastLink =
     badges(site, distance),
     el("div", { class: "site-body" }, el("div", { class: "dial" }, directionDial(site.dirRanges)), limits(site)),
     site.notes ? el("p", { class: "site-notes" }, el("b", {}, "Sources and notes: "), site.notes) : null,
-    actions.length ? el("div", { class: "site-actions" }, ...actions) : null);
+    actions.length ? el("div", { class: "site-actions" }, ...actions) : null,
+    onToggle ? homeToggle(site, onHome, onToggle) : null);
 }
 
 /** Compact row for a site that is not forecast yet. */
