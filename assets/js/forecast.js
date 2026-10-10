@@ -10,6 +10,7 @@ import { el } from "./common.js";
 import { renderTimeline, seriesFor, timelineTable } from "./chart.js";
 import { siteCard } from "./site-card.js";
 import { distanceLabel, getHome } from "./location.js";
+import { getHomeSites, setHomeSite } from "./home-sites.js";
 
 const $ = (id) => document.getElementById(id);
 const siteSel = $("site"), daySel = $("day"), compareSel = $("compare");
@@ -126,7 +127,12 @@ function render() {
     $("table-details").hidden = false;
   }
   renderStrip(site);
-  $("rules").replaceChildren(siteCard(site, { distance: distanceLabel(getHome(), site) }));
+  // The home page only lists forecast-daily sites, so only they get the checkbox.
+  $("rules").replaceChildren(siteCard(site, {
+    distance: distanceLabel(getHome(), site),
+    onHome: getHomeSites().has(site.id),
+    onToggle: site.active ? (on) => setHomeSite(site.id, on) : null,
+  }));
 }
 
 async function init() {
