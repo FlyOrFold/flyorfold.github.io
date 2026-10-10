@@ -1,17 +1,11 @@
 // The home page's site selection in assets/js/home-sites.js.
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
+import { fakeBrowser } from "./helpers.mjs";
 import { chooseHomeSites, getHomeSites, setHomeSite, byName, HOME_SITES_KEY } from "../assets/js/home-sites.js";
 
-const store = new Map();
-globalThis.localStorage = {
-  getItem: (k) => (store.has(k) ? store.get(k) : null),
-  setItem: (k, v) => store.set(k, String(v)),
-  removeItem: (k) => store.delete(k),
-};
-const events = [];
-globalThis.document = { dispatchEvent: (e) => events.push(e.type) };
-beforeEach(() => { store.clear(); events.length = 0; });
+const { store, events, reset } = fakeBrowser();
+beforeEach(reset);
 
 const site = (id, name, lat, lon) => ({ id, name, lat, lon });
 const sites = [

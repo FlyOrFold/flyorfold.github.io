@@ -31,3 +31,4 @@
     - { token: --series-b, name: Compared day, use: "The compared day's line, band and tile key (= Canopy)" }
     - { token: --grid, name: Grid, use: "Chart gridlines" }
     - { token: --ref, name: Reference, use: "70% reference line" }
+    - { token: --on-fill, name: On fill, use: "Text on strip cells shaded above 55%" }

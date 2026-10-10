@@ -2,8 +2,8 @@
 import { loadSites } from "./data.js";
 import { el } from "./common.js";
 import { siteCard, siteRow } from "./site-card.js";
-import { byName, getHomeSites, setHomeSite } from "./home-sites.js";
-import { clearHome, distanceLabel, getHome, parseCoords, setPoint, useMyLocation } from "./location.js";
+import { HOME_SITE_COUNT, byName, getHomeSites, setHomeSite } from "./home-sites.js";
+import { bindLocateButton, clearHome, distanceLabel, getHome, parseCoords, setPoint } from "./location.js";
 
 const $ = (id) => document.getElementById(id);
 let sites = [];
@@ -87,7 +87,8 @@ function drawHome() {
 
 // ---- Starting point controls ----
 
-function renderHomeControls() {
+/** Status line and Clear button for the starting point. */
+function renderStartingPoint() {
   const home = getHome();
   $("home-status").textContent = home
     ? `Distances from ${home.label}.`
@@ -104,10 +105,10 @@ function setPicking(on) {
   btn.textContent = picking ? "Cancel" : "Pick on map";
   $("map").classList.toggle("picking", picking);
   if (picking) $("home-status").textContent = "Click or tap the map to set your starting point.";
-  else renderHomeControls();
+  else renderStartingPoint();
 }
 
-function setupHomeControls() {
+function setupStartingPoint() {
   $("pick-on-map").addEventListener("click", () => setPicking(!picking));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && picking) setPicking(false); });
   $("coords-form").addEventListener("submit", (e) => {
@@ -117,23 +118,21 @@ function setupHomeControls() {
     $("coords").value = "";
     setPoint(pt);
   });
-  $("use-location").addEventListener("click", async () => {
-    const btn = $("use-location");
-    btn.disabled = true;
-    btn.textContent = "Finding you…";
-    try { await useMyLocation(); }
-    catch (err) { $("home-status").textContent = `${err.message} Pick a point on the map or type coordinates instead.`; }
-    finally { btn.disabled = false; btn.textContent = "Use my location"; }
+  bindLocateButton($("use-location"), (err) => {
+    $("home-status").textContent = `${err.message} Pick a point on the map or type coordinates instead.`;
   });
   $("clear-home").addEventListener("click", clearHome);
   document.addEventListener("homechange", () => { setPicking(false); renderLists(); drawHome(); });
-  renderHomeControls();
+  renderStartingPoint();
 }
+
+// The note under "Forecast daily" quotes the home page's fallback count; keep it in step.
+for (const n of document.querySelectorAll("[data-home-count]")) n.textContent = String(HOME_SITE_COUNT);
 
 loadSites().then((list) => {
   sites = list;
   renderLists();
-  setupHomeControls();
+  setupStartingPoint();
   initMap();
   if (location.hash) focusSite(location.hash.slice(1));
 }).catch((e) => {

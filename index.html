@@ -30,7 +30,7 @@ scripts:
     </div>
     <p class="muted small outlook-sub" id="outlook-sub">Chance of a flyable day, newest forecast for each day.</p>
     <div id="outlook" class="grid" aria-live="polite"><p class="muted">Loading forecasts…</p></div>
-    <p class="panel-note"><strong>Planning aid only.</strong> Forecasts are for a model grid cell about 25 km across, not the launch. Check live conditions and make your own call on the day.</p>
+    <p class="panel-note">{% include planning-aid.html %}</p>
     <details class="about-numbers">
       <summary>About these numbers</summary>
       <p class="small">The chance of a flyable day is the share of forecast ensemble members where the site's wind, gust and rain limits hold for long enough inside its flying window. The line in each today tile shows every run so far for today on a fixed 0–100% scale, with the lowest and highest values beside it. Each day in the strip shows its newest forecast; days before today show the last forecast made for them, not what happened. Distances are straight-line, not driving, from a point stored only in this browser and rounded to about 10 km.</p>

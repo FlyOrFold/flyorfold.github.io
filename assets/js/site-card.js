@@ -1,6 +1,6 @@
 // A site's limits as a card (forecast sites) or a compact row (sites not forecast yet),
 // with a compass dial of its allowed wind directions.
-import { el, withSample } from "./common.js";
+import { el, forecastHref } from "./common.js";
 import { svgEl } from "./svg.js";
 
 /** Compass dial. Degrees are where the wind blows FROM, N = 0, clockwise. Ranges may wrap north. */
@@ -93,7 +93,7 @@ function homeToggle(site, onHome, onToggle) {
  */
 export function siteCard(site, { heading = "h3", distance = null, forecastLink = false, onHome = false, onToggle = null } = {}) {
   const actions = [
-    forecastLink ? el("a", { class: "btn small-btn", href: withSample(`forecast.html?site=${encodeURIComponent(site.id)}`) }, "See forecast") : null,
+    forecastLink ? el("a", { class: "btn small-btn", href: forecastHref(site.id) }, "See forecast") : null,
     ...siteLinks(site),
   ].filter(Boolean);
   return el("article", { class: "card site-card", id: site.id, tabindex: "-1" },

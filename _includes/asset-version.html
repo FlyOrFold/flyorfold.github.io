@@ -1,0 +1,10 @@
+{%- comment -%}
+  One version string per build, appended to CSS and JS URLs so a deploy never mixes new HTML with
+  cached old scripts (GitHub Pages caches each file for 10 minutes). On GitHub Pages
+  (JEKYLL_ENV=production) it is the commit; locally it changes on every rebuild.
+{%- endcomment -%}
+{%- if jekyll.environment == "production" and site.github.build_revision -%}
+  {%- assign asset_version = site.github.build_revision | slice: 0, 12 -%}
+{%- else -%}
+  {%- assign asset_version = site.time | date: "%s" -%}
+{%- endif -%}

@@ -6,7 +6,7 @@ import {
 } from "./data.js";
 import { dayTile } from "./day-tile.js";
 import { dayStrip, stripScale } from "./day-strip.js";
-import { el } from "./common.js";
+import { el, reloadOnNewDay } from "./common.js";
 import { renderTimeline, seriesFor, timelineTable } from "./chart.js";
 import { siteCard } from "./site-card.js";
 import { distanceLabel, getHome } from "./location.js";
@@ -161,6 +161,7 @@ async function init() {
   render();
 }
 
+reloadOnNewDay(today);
 init().catch((e) => {
   console.error(e);
   $("chart").replaceChildren(el("p", { class: "empty" }, "Forecasts could not be loaded. Try again later."));

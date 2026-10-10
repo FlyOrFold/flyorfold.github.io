@@ -1,0 +1,5 @@
+#!/bin/sh
+# Runs the tests before every push; a failure stops the push.
+# Enable once per clone:  git config core.hooksPath .githooks
+# Skip in an emergency:   git push --no-verify
+exec node --test tests/

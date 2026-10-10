@@ -80,6 +80,7 @@ any write-capable credential in this repo.
 - **Planning aid, not a go signal.** Any page showing probabilities must say that forecasts are for
   a model grid cell (about 25 km), not the launch, and that the pilot makes the go/no-go call after
   checking live conditions. Do not use "safe to fly" or "go/no-go" wording on the chart itself.
+  The required sentence is `_includes/planning-aid.html` (footer, home and forecast pages); edit it there.
 - **Site rules need provenance.** Every wind limit shown should carry its source and whether it is
   verified. Show unverified rules as unverified. Never invent a limit to fill a blank.
 - **Show access requirements** where known (club membership, in-person waiver, officer escort).
@@ -109,7 +110,13 @@ any write-capable credential in this repo.
   Shared pieces: `svg.js` (SVG element helper), `day-tile.js` (day tiles and sparkline), `day-strip.js` (two-week strip),
   `signedPts()` in `data.js` for "+3 pts" / "−3 pts" (true minus).
 - Tests: `node --test tests/` (Node's built-in runner, no packages). Add a test when changing
-  parsing, dates, trend words, chart segmentation or distances.
+  parsing, dates, trend words, chart segmentation or distances. `tests/helpers.mjs` fakes
+  localStorage and document events. `.githooks/pre-push` runs the tests (`git config core.hooksPath .githooks`).
+- CSS and JS URLs carry `?v=` (`_includes/asset-version.html`), and `_includes/import-map.html`
+  versions every module import, so a deploy never mixes cached old scripts with new HTML. Import
+  modules by relative path (`./data.js`) so the map applies; never hard-code a `?v=`.
+- Shared helpers: `forecastHref()` in `common.js` for timeline links, `bindLocateButton()` in
+  `location.js` for "Use my location", `reloadOnNewDay()` for pages built around today.
 - Local dev: `LANG=en_US.UTF-8 bundle exec jekyll serve --livereload` (also in `.claude/launch.json`).
   Gems install to `vendor/bundle` (git-ignored, excluded from the build).
 - Deploy: GitHub Pages builds from `main`, repo root.

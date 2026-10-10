@@ -1,0 +1,13 @@
+{%- comment -%}
+  Maps every module in assets/js/ to its versioned URL, so imports between modules
+  (`import … from "./data.js"`) get the same ?v= as the page scripts. No bundler needed.
+  Browsers without import maps still work; they just load unversioned module URLs.
+{%- endcomment -%}
+{%- assign modules = site.static_files | where_exp: "f", "f.path contains '/assets/js/'" | where: "extname", ".js" -%}
+<script type="importmap">
+{ "imports": {
+{%- for f in modules %}
+  "{{ f.path | relative_url }}": "{{ f.path | relative_url }}?v={{ asset_version }}"{% unless forloop.last %},{% endunless %}
+{%- endfor %}
+} }
+</script>

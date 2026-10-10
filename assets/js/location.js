@@ -70,6 +70,21 @@ export function useMyLocation() {
   });
 }
 
+/**
+ * Wire a "Use my location" button: busy text while the browser looks, then store the point
+ * (which fires "homechange"). `onError(err)` shows the failure; each page says what to do instead.
+ */
+export function bindLocateButton(btn, onError) {
+  const label = btn.textContent;
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    btn.textContent = "Finding you…";
+    try { await useMyLocation(); }
+    catch (err) { onError(err); }
+    finally { btn.disabled = false; btn.textContent = label; }
+  });
+}
+
 /** Great-circle distance in miles. */
 export function milesBetween(a, b) {
   const R = 3958.8, rad = Math.PI / 180;

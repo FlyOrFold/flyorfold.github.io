@@ -1,3 +1,4 @@
+{%- include asset-version.html -%}
 <!doctype html>
 <html lang="{{ site.lang | default: 'en' }}">
 <head>
@@ -8,8 +9,8 @@
 {{ content }}
 {% include footer.html %}
 {%- for script in page.scripts %}
-<script type="module" src="{{ script | relative_url }}"></script>
+<script type="module" src="{{ script | relative_url }}?v={{ asset_version }}"></script>
 {%- endfor %}
-<script type="module" src="{{ '/assets/js/boot.js' | relative_url }}"></script>
+<script type="module" src="{{ '/assets/js/boot.js' | relative_url }}?v={{ asset_version }}"></script>
 </body>
 </html>

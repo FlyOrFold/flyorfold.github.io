@@ -26,14 +26,15 @@ export function dayStrip({ days, latest, today, label, selected = null, compare 
     if (i % 7 === 0) { row = el("div", { class: "cal-row", role: "row" }); grid.append(row); }
     const r = latest.get(day);
     const share = r ? Math.round(r.p * 100) : 0;
-    const cls = ["cal-cell", day < today && "past", day === today && "today",
+    // Above 55% the Sky shading is dark enough to need light text.
+    const cls = ["cal-cell", r && r.p > 0.55 && "strong", day < today && "past", day === today && "today",
       day === selected && "selected", day === compare && "compare"].filter(Boolean).join(" ");
     const when = day === today ? "Today" : String(Number(day.slice(8)));
     const content = [el("span", { class: "cal-date" }, when), el("b", {}, r ? pct(r.p) : "–")];
     const title = `${shortDate(day)}: ${r ? `${pct(r.p)} (run of ${shortDate(r.issued)})` : "no forecast"}`;
     const attrs = {
       class: cls, role: "cell", title,
-      style: `--share: ${share}%; color: ${r && r.p > 0.55 ? "#fff" : "var(--text)"}`,
+      style: `--share: ${share}%`,
     };
     const name = `${shortDate(day)}${day === today ? " (today)" : ""}, ${r ? pct(r.p) : "no forecast"}`;
     if (onPick) {

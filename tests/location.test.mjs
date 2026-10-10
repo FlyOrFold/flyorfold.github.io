@@ -1,18 +1,11 @@
 // Distances and the viewer's stored starting point in assets/js/location.js.
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
+import { fakeBrowser } from "./helpers.mjs";
 import { milesBetween, distanceLabel, byDistance, getHome, setPoint, clearHome, parseCoords, formatCoords } from "../assets/js/location.js";
 
-// Minimal browser stand-ins: localStorage and the document event the page listens for.
-const store = new Map();
-globalThis.localStorage = {
-  getItem: (k) => (store.has(k) ? store.get(k) : null),
-  setItem: (k, v) => store.set(k, String(v)),
-  removeItem: (k) => store.delete(k),
-};
-const events = [];
-globalThis.document = { dispatchEvent: (e) => events.push(e.type) };
-beforeEach(() => { store.clear(); events.length = 0; });
+const { store, events, reset } = fakeBrowser();
+beforeEach(reset);
 
 const columbus = { lat: 39.96, lon: -83.0 };
 const cleveland = { lat: 41.5, lon: -81.69 };

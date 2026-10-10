@@ -13,4 +13,5 @@
   // Before first paint: record the theme in use as data-scheme (boot.js keeps it current).
   document.documentElement.dataset.scheme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 </script>
-<link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+{% include import-map.html %}
+<link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}?v={{ asset_version }}">

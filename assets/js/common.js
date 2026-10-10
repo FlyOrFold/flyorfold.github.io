@@ -1,5 +1,5 @@
 // Small DOM helpers shared by the page scripts. No side effects on import (startup is in boot.js).
-import { isSample } from "./data.js";
+import { isSample, localToday } from "./data.js";
 
 /** Create an element. Text content is always set with textContent, never innerHTML. */
 export function el(tag, attrs = {}, ...children) {
@@ -16,6 +16,21 @@ export function el(tag, attrs = {}, ...children) {
     node.append(c instanceof Node ? c : document.createTextNode(String(c)));
   }
   return node;
+}
+
+/**
+ * Pages built around "today" reload when the tab comes back on a later day, so a tab left open
+ * overnight doesn't keep calling yesterday "Today". The forecast page's URL keeps its selection.
+ */
+export function reloadOnNewDay(today) {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && localToday() !== today) location.reload();
+  });
+}
+
+/** Link to a site's forecast timeline, optionally for one day ("YYYY-MM-DD"). */
+export function forecastHref(siteId, day = null) {
+  return withSample(`forecast.html?site=${encodeURIComponent(siteId)}${day ? `&day=${day}` : ""}`);
 }
 
 /** Carry ?sample across internal links so sample mode stays on while browsing. */

@@ -5,10 +5,10 @@ import {
   dayHistory, dayMonth, dayWindow, isSample, latestByTarget, latestIssued, loadForecasts, loadSites, localToday,
   monthsAround, shortDate, signedPts,
 } from "./data.js";
-import { el, withSample } from "./common.js";
+import { el, forecastHref, reloadOnNewDay, withSample } from "./common.js";
 import { dayTile } from "./day-tile.js";
 import { dayStrip, stripScale } from "./day-strip.js";
-import { clearHome, distanceLabel, getHome, useMyLocation } from "./location.js";
+import { bindLocateButton, clearHome, distanceLabel, getHome } from "./location.js";
 import { HOME_SITES_KEY, HOME_SITE_COUNT, chooseHomeSites, getHomeSites } from "./home-sites.js";
 
 /** Compact tile for today: newest value, a sparkline of every run, and the change since the run before. */
@@ -40,17 +40,16 @@ const days = dayWindow(today);
 function renderCards(sites, rows) {
   const home = getHome();
   const { sites: shown } = chooseHomeSites(sites, getHomeSites(), home, HOME_SITE_COUNT);
-  const link = (s, day) => withSample(`forecast.html?site=${encodeURIComponent(s.id)}&day=${day}`);
   outlook.replaceChildren(...shown.map((s) => {
     const distance = distanceLabel(home, s);
     return el("article", { class: "card outlook-card" },
       el("div", { class: "outlook-head" },
-        el("h3", {}, el("a", { href: link(s, today) }, s.name)),
+        el("h3", {}, el("a", { href: forecastHref(s.id, today) }, s.name)),
         distance ? el("span", { class: "distance", title: "Straight-line distance, not driving distance" }, distance) : null),
       todayTile(rows, s.id, today),
       dayStrip({
         days, latest: latestByTarget(rows, s.id), today, mini: true,
-        label: `Newest chance of a flyable day at ${s.name}`, href: (day) => link(s, day),
+        label: `Newest chance of a flyable day at ${s.name}`, href: (day) => forecastHref(s.id, day),
       }));
   }));
 }
@@ -60,7 +59,8 @@ function renderCards(sites, rows) {
 
 let outlookMeta = "";
 
-function renderHomeControls() {
+/** Hero buttons: "Use my location" until a point is set, then "Clear my location". */
+function renderHeroLocation() {
   const home = getHome();
   $("use-location").hidden = !!home;
   $("clear-home").hidden = !home;
@@ -68,21 +68,14 @@ function renderHomeControls() {
   meta.textContent = outlookMeta;
 }
 
-function setupHomeControls() {
-  $("use-location").addEventListener("click", async () => {
-    const btn = $("use-location");
-    btn.disabled = true;
-    btn.textContent = "Finding you…";
-    try { await useMyLocation(); }
-    catch (err) {
-      $("home-status").replaceChildren(`${err.message} `,
-        el("a", { href: withSample("sites.html#home-controls") }, "Set a starting point on the Sites page"), ".");
-    }
-    finally { btn.disabled = false; btn.textContent = "Use my location"; }
+function setupHeroLocation() {
+  bindLocateButton($("use-location"), (err) => {
+    $("home-status").replaceChildren(`${err.message} `,
+      el("a", { href: withSample("sites.html#home-controls") }, "Set a starting point on the Sites page"), ".");
   });
   $("clear-home").addEventListener("click", clearHome);
-  document.addEventListener("homechange", renderHomeControls);
-  renderHomeControls();
+  document.addEventListener("homechange", renderHeroLocation);
+  renderHeroLocation();
 }
 
 async function renderOutlook() {
@@ -99,7 +92,7 @@ async function renderOutlook() {
   }
 
   outlookMeta = `${dayMonth(days[0])}–${dayMonth(days.at(-1))} · latest run ${shortDate(latest)}`;
-  renderHomeControls();
+  renderHeroLocation();
 
   const siteIds = new Set(rows.filter((r) => r.issued === latest).map((r) => r.site));
   const shown = sites.filter((s) => siteIds.has(s.id));
@@ -114,7 +107,8 @@ async function renderOutlook() {
   window.addEventListener("storage", (e) => { if (e.key === HOME_SITES_KEY) renderCards(shown, rows); });
 }
 
-setupHomeControls();
+reloadOnNewDay(today);
+setupHeroLocation();
 renderOutlook().catch((e) => {
   console.error(e);
   outlook.replaceChildren(el("p", { class: "muted" }, "Forecasts could not be loaded. Try again later."));

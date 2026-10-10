@@ -36,6 +36,13 @@ the site list in `sample/sites.csv` and forecasts generated in the browser by `a
 relative to today, so every day on the pages has runs. Past runs never change from day to day, like
 the real log. Every page shows a **Sample data** badge while it's on.
 
+### Caching
+
+GitHub Pages caches every file for 10 minutes. So that a deploy never mixes new HTML with old
+scripts, the layout adds `?v=<commit>` to the stylesheet and page scripts, and an import map
+(`_includes/import-map.html`) gives every module in `assets/js/` the same version. New modules are
+picked up automatically.
+
 ## Running locally
 
 Needs Ruby 3.x and Bundler. Once:
@@ -63,6 +70,13 @@ distances, typed coordinates) has tests that use Node's built-in runner, with no
 
 ```bash
 node --test tests/
+```
+
+A pre-push hook in `.githooks/` runs them before every push and stops the push if any fail.
+Turn it on once per clone:
+
+```bash
+git config core.hooksPath .githooks
 ```
 
 ## Posting news

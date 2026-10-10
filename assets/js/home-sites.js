@@ -4,7 +4,7 @@
 import { byDistance } from "./location.js";
 
 export const HOME_SITES_KEY = "flyorfold.homeSites";
-export const HOME_SITE_COUNT = 6; // sites.html says "6" too
+export const HOME_SITE_COUNT = 6; // also fills [data-home-count] on the Sites page
 
 /** Site ids picked for the home page, as a Set (empty when none or storage is blocked). */
 export function getHomeSites() {

@@ -41,6 +41,7 @@
   --series-b: var(--canopy);   /* the day it is compared with */
   --grid: light-dark(#e3e8ee, #1e2c3d);
   --ref: light-dark(#8a97a6, #6f7f91);
+  --on-fill: #fff;                                 /* text on strongly shaded strip cells */
 
   /* Sky scene */
   --sky-top: light-dark(#8ec3ee, #07101c);
@@ -407,11 +408,11 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .cal-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
 .cal-dow { font-size: .72rem; color: var(--muted); text-align: center; padding-bottom: 2px; }
 .cal-cell {
-  border-radius: 8px; min-height: 52px; font-variant-numeric: tabular-nums;
+  border-radius: 8px; min-height: 52px; font-variant-numeric: tabular-nums; color: var(--text);
   background: color-mix(in oklab, var(--sky) var(--share, 0%), var(--surface-2));
   display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2;
 }
-.cal-cell.blank { background: transparent; }
+.cal-cell.strong { color: var(--on-fill); }
 .cal-cell > button, .cal-cell > a {
   all: unset; box-sizing: border-box; width: 100%; height: 100%; min-height: 52px; border-radius: 8px; cursor: pointer;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
