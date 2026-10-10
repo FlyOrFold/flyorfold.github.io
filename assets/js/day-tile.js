@@ -9,7 +9,7 @@ import { svgEl } from "./svg.js";
  * Stretches to the tile width; strokes stay 2px via non-scaling-stroke.
  */
 export function sparkline(values, color, label) {
-  const W = 120, H = 30, pad = 3;
+  const W = 120, H = 48, pad = 3;
   const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: "none", class: "spark", role: "img", "aria-label": label });
   const x = (i) => (values.length < 2 ? W : (i / (values.length - 1)) * W);
   const y = (p) => pad + (1 - p) * (H - 2 * pad);
@@ -27,6 +27,12 @@ export function sparkline(values, color, label) {
   return svg;
 }
 
+/** "14 runs, 16%–29%": how far the sparkline moved, so its size reads without the line. */
+export function sparkRange(values) {
+  if (values.length < 2) return null;
+  return `${values.length} runs, ${pct(Math.min(...values))}–${pct(Math.max(...values))}`;
+}
+
 /**
  * @param {object} o
  * @param {"compact"|"large"} [o.size]
@@ -34,7 +40,7 @@ export function sparkline(values, color, label) {
  * @param {string} o.color     series colour, e.g. "var(--series-a)"
  * @param {number|null} o.value  latest probability 0–1, or null when not forecast
  * @param {{icon: string, word: string}|null} [o.trend]  from describeTrend()
- * @param {number[]|null} [o.spark]  every run's probability, for a sparkline
+ * @param {number[]|null} [o.spark]  every run's probability, for a sparkline and its range
  * @param {string} o.detail   the small line at the bottom
  */
 export function dayTile({ size = "compact", label, color, value, trend = null, spark = null, detail }) {
@@ -42,6 +48,7 @@ export function dayTile({ size = "compact", label, color, value, trend = null, s
     el("div", { class: "label" }, el("i", { class: "key", style: `background:${color}` }), label),
     el("div", { class: "value" }, value == null ? "–" : pct(value)),
     spark?.length ? sparkline(spark, color, `${label}, by run: ${spark.map(pct).join(", ")}`) : null,
+    spark?.length > 1 ? el("div", { class: "spark-range" }, sparkRange(spark)) : null,
     trend ? el("div", { class: "trend" }, el("span", { "aria-hidden": "true" }, trend.icon), ` ${trend.word}`) : null,
     el("div", { class: "detail" }, detail));
 }

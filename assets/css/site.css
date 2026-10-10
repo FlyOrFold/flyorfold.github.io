@@ -299,7 +299,8 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .day-tile .label { display: flex; align-items: center; gap: 6px; }
 .day-tile .key { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
 .day-tile .detail { font-variant-numeric: tabular-nums; }
-.day-tile .spark { display: block; width: 100%; height: 30px; margin: 6px 0 4px; overflow: visible; }
+.day-tile .spark { display: block; width: 100%; height: 48px; margin: 6px 0 4px; overflow: visible; }
+.day-tile .spark-range { font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; margin-bottom: 2px; }
 .day-tile .trend { font-weight: 650; color: var(--text); }
 .day-tile .trend span { display: inline-block; width: 1.1em; }
 
