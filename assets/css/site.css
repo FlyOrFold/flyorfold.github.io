@@ -234,7 +234,7 @@ body.sky .nav a[aria-current="page"] { background: var(--on-sky-btn); }
 /* Buttons */
 .cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .btn {
-  display: inline-block; padding: 10px 16px; border-radius: var(--radius-sm);
+  display: inline-block; padding: 10px 16px; border-radius: var(--radius-sm); font: inherit; cursor: pointer;
   background: var(--accent); color: var(--on-accent); text-decoration: none; font-weight: 600; border: 1px solid var(--accent);
 }
 .btn.secondary { background: transparent; color: var(--text); border-color: var(--line); }
@@ -299,12 +299,15 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .day-tile .label { display: flex; align-items: center; gap: 6px; }
 .day-tile .key { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
 .day-tile .detail { font-variant-numeric: tabular-nums; }
+.day-tile .detail > span { white-space: nowrap; } /* wrap between parts, not inside one */
 .day-tile .spark { display: block; width: 100%; height: 48px; margin: 6px 0 4px; overflow: visible; }
-.day-tile .spark-range { font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; margin-bottom: 2px; }
 .day-tile .trend { font-weight: 650; color: var(--text); }
 .day-tile .trend span { display: inline-block; width: 1.1em; }
 
-.day-tile.compact { padding: 10px 12px; }
+/* Compact: label on top, value and sparkline side by side, one detail line under both */
+.day-tile.compact { padding: 8px 12px; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; align-items: center; }
+.day-tile.compact > .label, .day-tile.compact > .detail, .day-tile.compact > .trend { grid-column: 1 / -1; }
+.day-tile.compact .spark { margin: 2px 0; }
 .day-tile.compact .label { font-size: .8rem; color: var(--muted); }
 .day-tile.compact .value { font-size: 1.8rem; font-weight: 650; line-height: 1.1; }
 .day-tile.compact .detail { font-size: .8rem; color: var(--text-2); }
@@ -342,11 +345,21 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 
 /* Two-week outlook cards (after .card: they override its background and padding) */
 .outlook-card { background: var(--bg); border-color: transparent; padding: 14px; }
-.outlook-card h3 { margin-bottom: 2px; }
+.outlook-sub { margin: 0 0 12px; }
+.outlook-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.outlook-card h3 { margin: 0; min-width: 0; }
 .outlook-card h3 a { color: var(--text); text-decoration: none; }
 .outlook-card h3 a:hover { text-decoration: underline; }
-.outlook-card .day-tile { margin-top: 10px; }
-.outlook-card .cal { margin-top: 10px; }
+.outlook-card .distance { flex: none; }
+.outlook-card .day-tile { margin-top: 8px; }
+.outlook-card .cal { margin-top: 8px; }
+.about-numbers { margin-top: 4px; }
+.about-numbers > summary { padding: 4px 0; }
+.about-numbers p { margin: 4px 0 0; color: var(--text-2); }
+
+/* Hero starting-point status (errors, "Finding you") */
+.hero-status { margin: 10px 0 0; color: var(--text-2); max-width: 34em; }
+.hero-status:empty { display: none; }
 
 /* How it works */
 .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }

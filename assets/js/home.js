@@ -1,5 +1,6 @@
-// Home page, per site: a today tile (latest value, a line of every run, change since the last run)
-// and a two-week strip of each day's newest forecast; each day links to its timeline.
+// Home page, one card per site (nearest first once the viewer sets a starting point): distance,
+// a today tile (latest value, a line of every run, change since the last run) and a two-week strip
+// of each day's newest forecast; each day links to its timeline.
 import {
   dayHistory, dayMonth, dayWindow, isSample, latestByTarget, latestIssued, loadForecasts, loadSites, localToday,
   monthsAround, shortDate, signedPts,
@@ -7,6 +8,7 @@ import {
 import { el, withSample } from "./common.js";
 import { dayTile } from "./day-tile.js";
 import { dayStrip, stripScale } from "./day-strip.js";
+import { byDistance, clearHome, distanceLabel, getHome, useMyLocation } from "./location.js";
 
 /** Compact tile for today: newest value, a sparkline of every run, and the change since the run before. */
 function todayTile(rows, siteId, today) {
@@ -24,43 +26,89 @@ function todayTile(rows, siteId, today) {
   });
 }
 
-const outlook = document.getElementById("outlook");
-const meta = document.getElementById("outlook-meta");
+const $ = (id) => document.getElementById(id);
+const outlook = $("outlook");
+const meta = $("outlook-meta");
+const today = localToday();
+const days = dayWindow(today);
+
+/** Cards for the sites in the latest run, nearest first once a starting point is set. */
+function renderCards(sites, rows) {
+  const home = getHome();
+  const link = (s, day) => withSample(`forecast.html?site=${encodeURIComponent(s.id)}&day=${day}`);
+  outlook.replaceChildren(...byDistance(home, sites).map((s) => {
+    const distance = distanceLabel(home, s);
+    return el("article", { class: "card outlook-card" },
+      el("div", { class: "outlook-head" },
+        el("h3", {}, el("a", { href: link(s, today) }, s.name)),
+        distance ? el("span", { class: "distance", title: "Straight-line distance, not driving distance" }, distance) : null),
+      todayTile(rows, s.id, today),
+      dayStrip({
+        days, latest: latestByTarget(rows, s.id), today, mini: true,
+        label: `Newest chance of a flyable day at ${s.name}`, href: (day) => link(s, day),
+      }));
+  }));
+}
+
+// ---- Starting point: only "Use my location", in the hero. The Sites page has the map pick,
+// typed coordinates and the privacy note. ----
+
+let outlookMeta = "";
+
+function renderHomeControls() {
+  const home = getHome();
+  $("use-location").hidden = !!home;
+  $("clear-home").hidden = !home;
+  $("home-status").textContent = "";
+  meta.textContent = outlookMeta;
+  $("outlook-sub").textContent = `Chance of a flyable day, newest forecast for each day.${home ? " Nearest site first." : ""}`;
+}
+
+function setupHomeControls() {
+  $("use-location").addEventListener("click", async () => {
+    const btn = $("use-location");
+    btn.disabled = true;
+    btn.textContent = "Finding you…";
+    try { await useMyLocation(); }
+    catch (err) {
+      $("home-status").replaceChildren(`${err.message} `,
+        el("a", { href: withSample("sites.html#home-controls") }, "Set a starting point on the Sites page"), ".");
+    }
+    finally { btn.disabled = false; btn.textContent = "Use my location"; }
+  });
+  $("clear-home").addEventListener("click", clearHome);
+  document.addEventListener("homechange", renderHomeControls);
+  renderHomeControls();
+}
 
 async function renderOutlook() {
-  const today = localToday();
-  const days = dayWindow(today);
   const [sites, rows] = await Promise.all([loadSites(), loadForecasts(monthsAround(today))]);
   const latest = latestIssued(rows);
-  outlook.replaceChildren();
 
   if (!latest) {
     meta.textContent = "";
-    outlook.append(el("div", { class: "card empty" },
+    $("outlook-sub").hidden = true;
+    outlook.replaceChildren(el("div", { class: "card empty" },
       el("p", {}, "The forecast log has no runs yet. The daily job writes its first rows soon."),
       isSample ? null : el("a", { href: "index.html?sample" }, "Preview with sample data")));
     return;
   }
 
-  meta.textContent = `${dayMonth(days[0])}–${dayMonth(days.at(-1))} · latest run ${shortDate(latest)}`;
+  outlookMeta = `${dayMonth(days[0])}–${dayMonth(days.at(-1))} · latest run ${shortDate(latest)}`;
+  renderHomeControls();
 
   const siteIds = new Set(rows.filter((r) => r.issued === latest).map((r) => r.site));
   const shown = sites.filter((s) => siteIds.has(s.id));
-  const link = (s, day) => withSample(`forecast.html?site=${encodeURIComponent(s.id)}&day=${day}`);
-  for (const s of shown) {
-    outlook.append(el("article", { class: "card outlook-card" },
-      el("h3", {}, el("a", { href: link(s, today) }, s.name)),
-      el("div", { class: "muted small" }, "Chance of a flyable day"),
-      todayTile(rows, s.id, today),
-      dayStrip({
-        days, latest: latestByTarget(rows, s.id), today, mini: true,
-        label: `Newest chance of a flyable day at ${s.name}`, href: (day) => link(s, day),
-      })));
+  if (!shown.length) {
+    outlook.replaceChildren(el("p", { class: "muted" }, "No sites in the latest run."));
+    return;
   }
-  if (shown.length) outlook.after(stripScale("Tap a day to see how its forecast changed"));
-  else outlook.append(el("p", { class: "muted" }, "No sites in the latest run."));
+  renderCards(shown, rows);
+  outlook.after(stripScale("Tap a day to see how its forecast changed"));
+  document.addEventListener("homechange", () => renderCards(shown, rows));
 }
 
+setupHomeControls();
 renderOutlook().catch((e) => {
   console.error(e);
   outlook.replaceChildren(el("p", { class: "muted" }, "Forecasts could not be loaded. Try again later."));

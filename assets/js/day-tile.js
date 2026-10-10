@@ -1,5 +1,5 @@
 // One day's chance of a flyable day as a tile: large with a trend word (the forecast summary) or
-// compact with a sparkline of every run (today, on the home cards). Also on the Brand page.
+// compact, one row of value and sparkline (today, on the home cards). Also on the Brand page.
 import { pct } from "./data.js";
 import { el } from "./common.js";
 import { svgEl } from "./svg.js";
@@ -48,7 +48,7 @@ export function dayTile({ size = "compact", label, color, value, trend = null, s
     el("div", { class: "label" }, el("i", { class: "key", style: `background:${color}` }), label),
     el("div", { class: "value" }, value == null ? "–" : pct(value)),
     spark?.length ? sparkline(spark, color, `${label}, by run: ${spark.map(pct).join(", ")}`) : null,
-    spark?.length > 1 ? el("div", { class: "spark-range" }, sparkRange(spark)) : null,
     trend ? el("div", { class: "trend" }, el("span", { "aria-hidden": "true" }, trend.icon), ` ${trend.word}`) : null,
-    el("div", { class: "detail" }, detail));
+    el("div", { class: "detail" }, ...[detail, spark && sparkRange(spark)].filter(Boolean)
+      .flatMap((part, i) => [i ? " · " : null, el("span", {}, part)])));
 }

@@ -1,7 +1,7 @@
 // Distances and the viewer's stored starting point in assets/js/location.js.
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
-import { milesBetween, distanceLabel, getHome, setPoint, clearHome, parseCoords, formatCoords } from "../assets/js/location.js";
+import { milesBetween, distanceLabel, byDistance, getHome, setPoint, clearHome, parseCoords, formatCoords } from "../assets/js/location.js";
 
 // Minimal browser stand-ins: localStorage and the document event the page listens for.
 const store = new Map();
@@ -86,4 +86,17 @@ test("parseCoords rejects out-of-range, ambiguous and non-coordinate input", () 
 test("formatCoords", () => {
   assert.equal(formatCoords(40.1, -82.9), "40.1° N, 82.9° W");
   assert.equal(formatCoords(-0, 0), "0.0° N, 0.0° E");
+});
+
+test("byDistance: nearest first, sites without coordinates last in their order, unchanged without a home", () => {
+  const sites = [
+    { id: "far", lat: 35.0, lon: -85.4 },
+    { id: "nocoords-1", lat: null, lon: null },
+    { id: "near", ...cleveland },
+    { id: "nocoords-2", lat: null, lon: null },
+    { id: "mid", lat: 39.1, lon: -79.4 },
+  ];
+  assert.deepEqual(byDistance(cleveland, sites).map((s) => s.id), ["near", "mid", "far", "nocoords-1", "nocoords-2"]);
+  assert.deepEqual(byDistance(null, sites).map((s) => s.id), sites.map((s) => s.id));
+  assert.notEqual(byDistance(null, sites), sites); // a copy, never the caller's array
 });

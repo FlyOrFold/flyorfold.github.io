@@ -117,7 +117,7 @@ function setupHomeControls() {
     btn.disabled = true;
     btn.textContent = "Finding you…";
     try { await useMyLocation(); }
-    catch (err) { $("home-status").textContent = err.message; }
+    catch (err) { $("home-status").textContent = `${err.message} Pick a point on the map or type coordinates instead.`; }
     finally { btn.disabled = false; btn.textContent = "Use my location"; }
   });
   $("clear-home").addEventListener("click", clearHome);

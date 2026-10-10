@@ -12,9 +12,11 @@ scripts:
     <h1>Is it worth the trip?</h1>
     <p class="lede">See the chance of a flyable day at each site for the next ten days, and how it moves with every daily forecast run. A forecast that firms up is one to plan around. One that keeps flipping is a reason to wait.</p>
     <div class="cta">
-      <a class="btn" href="{{ '/forecast.html' | relative_url }}">See the forecast timeline</a>
+      <button type="button" class="btn" id="use-location">Use my location</button>
+      <button type="button" class="btn on-sky" id="clear-home" hidden>Clear my location</button>
       <a class="btn on-sky" href="{{ '/sites.html' | relative_url }}">Browse sites</a>
     </div>
+    <p class="hero-status small" id="home-status" role="status" aria-live="polite"></p>
   </div>
 
   {% include ridge.html %}
@@ -26,8 +28,13 @@ scripts:
       <h2 id="outlook-h">Two-week outlook</h2>
       <span class="muted small" id="outlook-meta"></span>
     </div>
+    <p class="muted small outlook-sub" id="outlook-sub">Chance of a flyable day, newest forecast for each day.</p>
     <div id="outlook" class="grid" aria-live="polite"><p class="muted">Loading forecasts…</p></div>
-    <p class="panel-note"><strong>Chance of a flyable day</strong> is the share of forecast ensemble members where the site's wind, gust and rain limits hold for long enough inside its flying window. The small line shows every run so far for today, on a fixed 0–100% scale, with the lowest and highest values under it. Each day in the strip shows its newest forecast; days before today show the last forecast made for them, not what happened. It covers a model grid cell about 25 km across, not the launch. Check live conditions and make your own call on the day.</p>
+    <p class="panel-note"><strong>Planning aid only.</strong> Forecasts are for a model grid cell about 25 km across, not the launch. Check live conditions and make your own call on the day.</p>
+    <details class="about-numbers">
+      <summary>About these numbers</summary>
+      <p class="small">The chance of a flyable day is the share of forecast ensemble members where the site's wind, gust and rain limits hold for long enough inside its flying window. The line in each today tile shows every run so far for today on a fixed 0–100% scale, with the lowest and highest values beside it. Each day in the strip shows its newest forecast; days before today show the last forecast made for them, not what happened. Distances are straight-line, not driving, from a point stored only in this browser and rounded to about 10 km.</p>
+    </details>
   </section>
 
   <section aria-labelledby="how-h">

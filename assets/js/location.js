@@ -60,11 +60,12 @@ export function clearHome() {
 export function useMyLocation() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) { reject(new Error("This browser can't share its location.")); return; }
+    // Messages say what went wrong; each page adds what to do instead.
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve(setPoint({ lat: pos.coords.latitude, lon: pos.coords.longitude }, "your location")),
       (err) => reject(new Error(err.code === err.PERMISSION_DENIED
-        ? "Location permission was declined. Pick a point on the map or type coordinates instead."
-        : "Couldn't get your location. Pick a point on the map or type coordinates instead.")),
+        ? "Location permission was declined."
+        : "Couldn't get your location.")),
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 3600000 });
   });
 }
@@ -75,6 +76,15 @@ export function milesBetween(a, b) {
   const dLat = (b.lat - a.lat) * rad, dLon = (b.lon - a.lon) * rad;
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+/** Sites nearest first from `home`; sites without coordinates keep their order at the end. No home: unchanged. */
+export function byDistance(home, sites) {
+  if (!home) return [...sites];
+  const d = (s) => (s.lat == null || s.lon == null ? Infinity : milesBetween(home, s));
+  return sites.map((s, i) => ({ s, i, d: d(s) }))
+    .sort((a, b) => a.d - b.d || a.i - b.i)
+    .map((x) => x.s);
 }
 
 /** "≈ 130 mi" rounded to 5 (or 10 past 100), or null when either point is missing. */

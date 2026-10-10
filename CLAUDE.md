@@ -133,6 +133,8 @@ any write-capable credential in this repo.
 - The Sites map uses Leaflet 1.9.4 from cdnjs with SRI hashes, and OpenStreetMap tiles (credit
   line required). It is the only third-party script; keep the integrity hashes if you upgrade it.
 - A viewer can set a starting point for distances (`assets/js/location.js`) anywhere in the world:
-  browser geolocation, a pick on the Sites map, or typed coordinates. It lives only in that browser's
+  browser geolocation, a pick on the Sites map, or typed coordinates (the home page offers only
+  "Use my location", in the hero, and sorts its cards nearest first; the Sites page has the other
+  ways and the privacy note). It lives only in that browser's
   localStorage, rounded to 0.1°, and must never go into a URL, a request, or the repo. That is why
   there is no place-name search: it would send the typed text to a geocoding service.
