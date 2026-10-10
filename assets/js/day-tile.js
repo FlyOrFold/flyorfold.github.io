@@ -1,5 +1,5 @@
-// One day's chance of a flyable day as a tile. Used by the home outlook (compact, with a
-// sparkline of every run), the forecast summary (large, with a trend word) and the Brand page.
+// One day's chance of a flyable day as a tile: large with a trend word (the forecast summary) or
+// compact with a sparkline of every run (today, on the home cards). Also on the Brand page.
 import { pct } from "./data.js";
 import { el } from "./common.js";
 import { svgEl } from "./svg.js";
@@ -30,8 +30,8 @@ export function sparkline(values, color, label) {
 /**
  * @param {object} o
  * @param {"compact"|"large"} [o.size]
- * @param {string} o.label     e.g. "Sat Oct 3"
- * @param {string} o.color     series colour, e.g. "var(--series-sat)"
+ * @param {string} o.label     e.g. "Wed, Oct 14"
+ * @param {string} o.color     series colour, e.g. "var(--series-a)"
  * @param {number|null} o.value  latest probability 0–1, or null when not forecast
  * @param {{icon: string, word: string}|null} [o.trend]  from describeTrend()
  * @param {number[]|null} [o.spark]  every run's probability, for a sparkline

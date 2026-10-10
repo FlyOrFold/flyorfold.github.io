@@ -1,7 +1,7 @@
 // Distances and the viewer's stored starting point in assets/js/location.js.
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
-import { milesBetween, distanceLabel, getHome, setPreset, clearHome, PRESETS } from "../assets/js/location.js";
+import { milesBetween, distanceLabel, getHome, setPoint, clearHome, parseCoords, formatCoords } from "../assets/js/location.js";
 
 // Minimal browser stand-ins: localStorage and the document event the page listens for.
 const store = new Map();
@@ -36,8 +36,8 @@ test("distanceLabel is null without a starting point or site coordinates", () =>
 
 test("starting point round-trips through localStorage and announces changes", () => {
   assert.equal(getHome(), null);
-  setPreset(PRESETS[0]);
-  assert.deepEqual(getHome(), { label: "Columbus, OH", lat: 39.96, lon: -83.0 });
+  setPoint({ lat: 39.96, lon: -83.04 });
+  assert.deepEqual(getHome(), { label: "40.0° N, 83.0° W", lat: 40, lon: -83 });
   clearHome();
   assert.equal(getHome(), null);
   assert.deepEqual(events, ["homechange", "homechange"]);
@@ -48,4 +48,42 @@ test("a corrupt or tampered stored value is ignored", () => {
   assert.equal(getHome(), null);
   store.set("flyorfold.home", JSON.stringify({ label: "x", lat: "39", lon: -83 }));
   assert.equal(getHome(), null);
+});
+
+test("setPoint rounds any point to 0.1° and keeps a given label", () => {
+  setPoint({ lat: -33.8688, lon: 151.2093 });
+  assert.deepEqual(getHome(), { label: "33.9° S, 151.2° E", lat: -33.9, lon: 151.2 });
+  setPoint({ lat: 46.0261, lon: 7.7491 }, "your location");
+  assert.deepEqual(getHome(), { label: "your location", lat: 46, lon: 7.7 });
+});
+
+test("setPoint refuses a missing or out-of-range coordinate instead of storing it", () => {
+  assert.throws(() => setPoint({ lat: 40.1, lon: undefined }), RangeError);
+  assert.throws(() => setPoint({ lat: 91, lon: 0 }), RangeError);
+  assert.equal(getHome(), null);
+});
+
+test("parseCoords: signed decimals, hemisphere letters, degree signs, and separators", () => {
+  const cases = {
+    "40.1, -82.9": { lat: 40.1, lon: -82.9 },
+    "40.1 -82.9": { lat: 40.1, lon: -82.9 },
+    "  40.1,-82.9 ": { lat: 40.1, lon: -82.9 },
+    "40.1N 82.9W": { lat: 40.1, lon: -82.9 },
+    "40.1° N, 82.9° W": { lat: 40.1, lon: -82.9 },
+    "33.87 s; 151.21 e": { lat: -33.87, lon: 151.21 },
+    "−12.5, +130": { lat: -12.5, lon: 130 }, // U+2212 minus, as some sites copy it
+    "0, 0": { lat: 0, lon: 0 },
+  };
+  for (const [text, want] of Object.entries(cases)) assert.deepEqual(parseCoords(text), want, text);
+});
+
+test("parseCoords rejects out-of-range, ambiguous and non-coordinate input", () => {
+  for (const bad of ["", "Columbus", "40.1", "91, 0", "0, 181", "-40 S, 10 E", "40 W, 80 N", "40.1-82.9", null]) {
+    assert.equal(parseCoords(bad), null, String(bad));
+  }
+});
+
+test("formatCoords", () => {
+  assert.equal(formatCoords(40.1, -82.9), "40.1° N, 82.9° W");
+  assert.equal(formatCoords(-0, 0), "0.0° N, 0.0° E");
 });

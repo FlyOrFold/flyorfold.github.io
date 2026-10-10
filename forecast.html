@@ -1,6 +1,6 @@
 ---
 title: Forecast timeline
-description: How the chance of a flyable Saturday and Sunday changed with each daily forecast run.
+description: How the chance of a flyable day at a site changed with each daily forecast run.
 body_class: sky
 scripts:
   - /assets/js/forecast.js
@@ -13,8 +13,11 @@ scripts:
       <label class="field">Site
         <select id="site"></select>
       </label>
-      <label class="field">Weekend
-        <select id="weekend"></select>
+      <label class="field">Day
+        <select id="day"></select>
+      </label>
+      <label class="field">Compare with
+        <select id="compare"></select>
       </label>
     </form>
   </div>
@@ -29,23 +32,19 @@ scripts:
       <h2 id="chart-h">Chance of a flyable day, by run</h2>
       <p class="muted small" id="chart-sub"></p>
     </div>
-    <div class="legend" aria-hidden="true">
-      <span><i style="background: var(--series-sat)"></i>Saturday</span>
-      <span><i style="background: var(--series-sun)"></i>Sunday</span>
-      <span><i class="ref"></i>70% reference</span>
-    </div>
+    <div class="legend" id="legend" aria-hidden="true"></div>
     <div id="chart" aria-live="polite"></div>
     <details id="table-details">
       <summary>Show as a table</summary>
       <div id="table"></div>
     </details>
 
-    <p class="panel-note"><strong>Planning aid only.</strong> Each point is the share of ensemble members where that day meets the site's limits for long enough inside its flying window. The forecast is for a model grid cell about 25 km across, not the launch. Saturday and Sunday are scored separately; the chance that both days work is not in the data yet. Check live conditions and make your own call on the day.</p>
+    <p class="panel-note"><strong>Planning aid only.</strong> Each point is the share of ensemble members where that day meets the site's limits for long enough inside its flying window. The forecast is for a model grid cell about 25 km across, not the launch. A compared day is scored on its own; the chance that both days work is not in the data. Check live conditions and make your own call on the day.</p>
   </section>
 
   <section aria-labelledby="strip-h">
     <div class="section-head">
-      <h2 id="strip-h">Next 14 days at this site</h2>
+      <h2 id="strip-h">Two weeks at this site</h2>
       <span class="muted small" id="strip-sub"></span>
     </div>
     <div class="card"><div id="strip"></div></div>

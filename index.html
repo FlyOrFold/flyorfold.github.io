@@ -8,9 +8,9 @@ scripts:
   {% include glider.html %}
 
   <div class="wrap hero-inner">
-    <p class="eyebrow">Paragliding weekend planner · central Ohio and beyond</p>
-    <h1>Is the weekend worth the drive?</h1>
-    <p class="lede">See the chance of a flyable day at sites within a long drive of central Ohio, and how it moves as the weekend gets closer. A forecast that firms up is one to plan around. One that keeps flipping is a reason to wait.</p>
+    <p class="eyebrow">Paragliding forecast planner</p>
+    <h1>Is it worth the trip?</h1>
+    <p class="lede">See the chance of a flyable day at each site for the next ten days, and how it moves with every daily forecast run. A forecast that firms up is one to plan around. One that keeps flipping is a reason to wait.</p>
     <div class="cta">
       <a class="btn" href="{{ '/forecast.html' | relative_url }}">See the forecast timeline</a>
       <a class="btn on-sky" href="{{ '/sites.html' | relative_url }}">Browse sites</a>
@@ -23,11 +23,11 @@ scripts:
 <main class="wrap">
   <section class="card raised-panel" aria-labelledby="outlook-h">
     <div class="section-head">
-      <h2 id="outlook-h">This weekend</h2>
+      <h2 id="outlook-h">Two-week outlook</h2>
       <span class="muted small" id="outlook-meta"></span>
     </div>
     <div id="outlook" class="grid" aria-live="polite"><p class="muted">Loading forecasts…</p></div>
-    <p class="panel-note"><strong>Chance of a flyable day</strong> is the share of forecast ensemble members where the site's wind, gust and rain limits hold for long enough inside its flying window. The small line shows every run so far for that day. It covers a model grid cell about 25 km across, not the launch. Check live conditions and make your own call on the day.</p>
+    <p class="panel-note"><strong>Chance of a flyable day</strong> is the share of forecast ensemble members where the site's wind, gust and rain limits hold for long enough inside its flying window. The small line shows every run so far for today. Each day in the strip shows its newest forecast; days before today show the last forecast made for them, not what happened. It covers a model grid cell about 25 km across, not the launch. Check live conditions and make your own call on the day.</p>
   </section>
 
   <section aria-labelledby="how-h">
@@ -35,7 +35,7 @@ scripts:
     <ol class="steps">
       <li><span class="step-n" aria-hidden="true">1</span><div><h3>Every morning</h3><p>A scheduled job pulls the GFS ensemble forecast from Open-Meteo for every site, 14 days ahead.</p></div></li>
       <li><span class="step-n" aria-hidden="true">2</span><div><h3>Scored per site</h3><p>Each ensemble member is checked hour by hour against the site's wind direction, speed, gust and rain limits.</p></div></li>
-      <li><span class="step-n" aria-hidden="true">3</span><div><h3>Logged, not overwritten</h3><p>Every run is kept, so you can watch a weekend's chances change, and later check how good the forecasts were.</p></div></li>
+      <li><span class="step-n" aria-hidden="true">3</span><div><h3>Logged, not overwritten</h3><p>Every run is kept, so you can watch a day's chances change, and later check how good the forecasts were.</p></div></li>
     </ol>
   </section>
 

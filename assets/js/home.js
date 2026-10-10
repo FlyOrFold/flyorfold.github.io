@@ -1,29 +1,35 @@
-// Home page: this weekend's outlook per site from the latest run, with a trend line of every run.
+// Home page, per site: a today tile (latest value, a line of every run, change since the last run)
+// and a two-week strip of each day's newest forecast; each day links to its timeline.
 import {
-  addDays, dayMonth, isSample, latestIssued, loadForecasts, loadSites, localToday,
-  monthsAround, shortDate, signedPts, weekendHistory, weekendSaturday,
+  dayHistory, dayMonth, dayWindow, isSample, latestByTarget, latestIssued, loadForecasts, loadSites, localToday,
+  monthsAround, shortDate, signedPts,
 } from "./data.js";
 import { el, withSample } from "./common.js";
 import { dayTile } from "./day-tile.js";
+import { dayStrip, stripScale } from "./day-strip.js";
+
+/** Compact tile for today: newest value, a sparkline of every run, and the change since the run before. */
+function todayTile(rows, siteId, today) {
+  const hist = dayHistory(rows, siteId, today).filter((pt) => pt.a);
+  const [prev, last] = [hist.at(-2)?.a, hist.at(-1)?.a];
+  let detail = "Not forecast";
+  if (last && !prev) detail = "No earlier run";
+  else if (last) {
+    const d = last.p - prev.p;
+    detail = Math.round(d * 100) === 0 ? "No change since last run" : `${d > 0 ? "▲" : "▼"} ${signedPts(d)} since last run`;
+  }
+  return dayTile({
+    size: "compact", label: `Today, ${dayMonth(today)}`, color: "var(--series-a)",
+    value: last ? last.p : null, spark: hist.map((pt) => pt.a.p), detail,
+  });
+}
 
 const outlook = document.getElementById("outlook");
 const meta = document.getElementById("outlook-meta");
 
-/** Compact tile: latest value, a sparkline of every run, and the change since the previous run. */
-function outlookTile(label, color, row, prevRow, history) {
-  let detail = "Not forecast";
-  if (row && !prevRow) detail = "No earlier run";
-  else if (row) {
-    const d = row.p - prevRow.p;
-    detail = Math.round(d * 100) === 0 ? "No change since last run" : `${d > 0 ? "▲" : "▼"} ${signedPts(d)} since last run`;
-  }
-  return dayTile({ size: "compact", label, color, value: row ? row.p : null, spark: history, detail });
-}
-
 async function renderOutlook() {
   const today = localToday();
-  const sat = weekendSaturday(today);
-  const sun = addDays(sat, 1);
+  const days = dayWindow(today);
   const [sites, rows] = await Promise.all([loadSites(), loadForecasts(monthsAround(today))]);
   const latest = latestIssued(rows);
   outlook.replaceChildren();
@@ -36,30 +42,26 @@ async function renderOutlook() {
     return;
   }
 
-  const issuedDates = [...new Set(rows.map((r) => r.issued))].sort();
-  const prevIssued = issuedDates[issuedDates.length - 2];
-  meta.textContent = `${dayMonth(sat)}–${dayMonth(sun)} · latest run ${shortDate(latest)}`;
+  meta.textContent = `${dayMonth(days[0])}–${dayMonth(days.at(-1))} · latest run ${shortDate(latest)}`;
 
-  const find = (issued, site, target) => rows.find((r) => r.issued === issued && r.site === site && r.target === target);
   const siteIds = new Set(rows.filter((r) => r.issued === latest).map((r) => r.site));
   const shown = sites.filter((s) => siteIds.has(s.id));
+  const link = (s, day) => withSample(`forecast.html?site=${encodeURIComponent(s.id)}&day=${day}`);
   for (const s of shown) {
-    const hist = weekendHistory(rows, s.id, sat);
-    const series = (key) => hist.filter((pt) => pt[key]).map((pt) => pt[key].p);
-    const href = withSample(`forecast.html?site=${encodeURIComponent(s.id)}&weekend=${sat}`);
     outlook.append(el("article", { class: "card outlook-card" },
-      el("h3", {}, el("a", { href }, s.name)),
+      el("h3", {}, el("a", { href: link(s, today) }, s.name)),
       el("div", { class: "muted small" }, "Chance of a flyable day"),
-      el("div", { class: "days" },
-        outlookTile(`Sat ${dayMonth(sat)}`, "var(--series-sat)", find(latest, s.id, sat), prevIssued && find(prevIssued, s.id, sat), series("sat")),
-        outlookTile(`Sun ${dayMonth(sun)}`, "var(--series-sun)", find(latest, s.id, sun), prevIssued && find(prevIssued, s.id, sun), series("sun"))),
-      el("p", { class: "small", style: "margin:10px 0 0" }, el("a", { href }, "How this forecast has changed"))));
+      todayTile(rows, s.id, today),
+      dayStrip({
+        days, latest: latestByTarget(rows, s.id), today, mini: true,
+        label: `Newest chance of a flyable day at ${s.name}`, href: (day) => link(s, day),
+      })));
   }
-  if (!shown.length) outlook.append(el("p", { class: "muted" }, "No sites in the latest run."));
+  if (shown.length) outlook.after(stripScale("Tap a day to see how its forecast changed"));
+  else outlook.append(el("p", { class: "muted" }, "No sites in the latest run."));
 }
 
 renderOutlook().catch((e) => {
   console.error(e);
   outlook.replaceChildren(el("p", { class: "muted" }, "Forecasts could not be loaded. Try again later."));
 });
-

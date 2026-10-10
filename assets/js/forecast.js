@@ -1,47 +1,62 @@
-// Forecast page: run-by-run timeline for one site and weekend, plus the latest 14-day outlook.
+// Forecast page: run-by-run timeline for one site and day (plus an optional compared day),
+// the two-week strip of each day's newest forecast, and the site's limits.
 import {
-  addDays, dayMonth, describeTrend, isSample, latestIssued, loadForecasts, loadSites, localToday,
-  monthOf, monthsAround, pct, shortDate, signedPts, toDate, weekendHistory, weekendSaturday, weekendsWithData,
+  addDays, dayHistory, daysBetween, dayMonth, dayWindow, describeTrend, isISODate, isSample, latestByTarget,
+  latestIssued, loadForecasts, loadSites, localToday, monthOf, monthsAround, shortDate, signedPts,
 } from "./data.js";
 import { dayTile } from "./day-tile.js";
+import { dayStrip, stripScale } from "./day-strip.js";
 import { el } from "./common.js";
-import { renderTimeline, timelineTable } from "./chart.js";
+import { renderTimeline, seriesFor, timelineTable } from "./chart.js";
 import { siteCard } from "./site-card.js";
 import { distanceLabel, getHome } from "./location.js";
 
 const $ = (id) => document.getElementById(id);
-const siteSel = $("site"), weekendSel = $("weekend");
+const siteSel = $("site"), daySel = $("day"), compareSel = $("compare");
 const params = new URLSearchParams(location.search);
 const today = localToday();
-const upcoming = weekendSaturday(today);
+const windowDays = dayWindow(today);
 
 let sites = [], rows = [], cleanup = null;
 
-function weekendLabel(sat) {
-  const tag = sat === upcoming ? " (this weekend)" : sat === addDays(upcoming, 7) ? " (next weekend)" : "";
-  return `${dayMonth(sat)}–${dayMonth(addDays(sat, 1))}${tag}`;
+function dayLabel(day) {
+  const n = daysBetween(today, day);
+  const tag = n === 0 ? " (today)" : n === 1 ? " (tomorrow)" : n === -1 ? " (yesterday)" : "";
+  return `${shortDate(day)}${tag}`;
 }
 
-function fillWeekends(siteId, wanted) {
-  const list = new Set(weekendsWithData(rows, siteId));
-  list.add(upcoming);
-  const sorted = [...list].sort().reverse();
-  weekendSel.replaceChildren(...sorted.map((s) => el("option", { value: s }, weekendLabel(s))));
-  weekendSel.value = sorted.includes(wanted) ? wanted : upcoming;
+/** Day options: the two-week window, plus any day from the URL that falls outside it. */
+function fillDays(wanted, extra = []) {
+  const list = [...new Set([...windowDays, wanted, ...extra])].sort();
+  daySel.replaceChildren(...list.map((d) => el("option", { value: d }, dayLabel(d))));
+  daySel.value = wanted;
+}
+
+/** Compare options: every day option except the charted one. */
+function fillCompare(wanted) {
+  const list = [...daySel.options].map((o) => o.value).filter((d) => d !== daySel.value);
+  compareSel.replaceChildren(el("option", { value: "" }, "None"),
+    ...list.map((d) => el("option", { value: d }, dayLabel(d))));
+  compareSel.value = list.includes(wanted) ? wanted : "";
 }
 
 function syncURL() {
   const p = new URLSearchParams();
   if (isSample) p.set("sample", "");
   p.set("site", siteSel.value);
-  p.set("weekend", weekendSel.value);
+  p.set("day", daySel.value);
+  if (compareSel.value) p.set("compare", compareSel.value);
   history.replaceState(null, "", `?${p.toString().replace("sample=&", "sample&")}`);
 }
 
-const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+function pickDay(day) {
+  const keep = compareSel.value !== day ? compareSel.value : "";
+  daySel.value = day;
+  fillCompare(keep);
+  render();
+}
 
-/** Latest run's 14 days as a Mon–Sun calendar, so weekends always sit in the last two columns. */
-function renderStrip(site, selectedSat) {
+function renderStrip(site) {
   const box = $("strip");
   const siteRows = rows.filter((r) => r.site === site.id);
   const latest = latestIssued(siteRows);
@@ -50,100 +65,80 @@ function renderStrip(site, selectedSat) {
     box.replaceChildren(el("p", { class: "empty" }, "No runs for this site yet."));
     return;
   }
-  $("strip-sub").textContent = `Run of ${shortDate(latest)}`;
-  const latestRows = siteRows.filter((r) => r.issued === latest).sort((a, b) => (a.target < b.target ? -1 : 1));
-  const mondayIndex = (iso) => (toDate(iso).getUTCDay() + 6) % 7;
-  const selected = new Set([selectedSat, addDays(selectedSat, 1)]);
-
-  const grid = el("div", { class: "cal", role: "table", "aria-label": `Chance of a flyable day from the run of ${shortDate(latest)}` });
-  const head = el("div", { class: "cal-row cal-head", role: "row" },
-    ...WEEKDAYS.map((d, i) => el("div", { class: `cal-dow${i >= 5 ? " wknd" : ""}`, role: "columnheader" }, d)));
-  grid.append(head);
-
-  let row = el("div", { class: "cal-row", role: "row" });
-  for (let i = 0; i < mondayIndex(latestRows[0].target); i++) row.append(el("div", { class: "cal-cell blank", role: "cell" }));
-  for (const r of latestRows) {
-    if (row.children.length === 7) { grid.append(row); row = el("div", { class: "cal-row", role: "row" }); }
-    const dow = mondayIndex(r.target);
-    const isWknd = dow >= 5;
-    const share = Math.round(r.p * 100);
-    const sat = isWknd ? (dow === 5 ? r.target : addDays(r.target, -1)) : null;
-    const attrs = {
-      class: `cal-cell${isWknd ? " wknd" : ""}${selected.has(r.target) ? " selected" : ""}`,
-      role: "cell",
-      style: `--share: ${share}%; color: ${r.p > 0.55 ? "#fff" : "var(--text)"}`,
-      title: `${shortDate(r.target)}: ${pct(r.p)} (${r.n} members)`,
-    };
-    const content = [el("span", { class: "cal-date" }, String(Number(r.target.slice(8)))), el("b", {}, pct(r.p))];
-    if (sat && [...weekendSel.options].some((o) => o.value === sat)) {
-      const btn = el("button", { type: "button", "aria-label": `${shortDate(r.target)}, ${pct(r.p)}. Show this weekend` }, ...content);
-      btn.addEventListener("click", () => { weekendSel.value = sat; render(); $("chart-h").scrollIntoView({ behavior: "smooth", block: "start" }); });
-      row.append(el("div", attrs, btn));
-    } else {
-      row.append(el("div", attrs, ...content));
-    }
-  }
-  while (row.children.length < 7) row.append(el("div", { class: "cal-cell blank", role: "cell" }));
-  grid.append(row);
-
-  box.replaceChildren(grid,
-    el("div", { class: "scale", "aria-hidden": "true" }, "0%",
-      el("span", { class: "ramp", style: "background: linear-gradient(90deg, var(--surface-2), var(--sky))" }), "100%",
-      el("span", { class: "scale-note" }, "Tap a weekend to chart it")));
+  $("strip-sub").textContent = `Newest forecast for each day · latest run ${shortDate(latest)}`;
+  box.replaceChildren(
+    dayStrip({
+      days: windowDays, latest: latestByTarget(siteRows, site.id), today,
+      label: `Newest chance of a flyable day at ${site.name}, ${dayMonth(windowDays[0])} to ${dayMonth(windowDays.at(-1))}`,
+      selected: daySel.value, compare: compareSel.value || null,
+      onPick: (day) => { pickDay(day); $("chart-h").scrollIntoView({ behavior: "smooth", block: "start" }); },
+    }),
+    stripScale("Tap a day to chart it"));
 }
 
-/** Two large tiles: latest value, trend word, and net change for Saturday and Sunday. */
-function renderSummary(points, sat) {
-  const days = [["sat", "Saturday", sat, "var(--series-sat)"], ["sun", "Sunday", addDays(sat, 1), "var(--series-sun)"]];
-  $("summary").replaceChildren(...days.map(([key, name, day, color]) => {
-    const values = points.filter((pt) => pt[key]).map((pt) => pt[key].p);
+/** One large tile per charted day: latest value, trend word, and net change. */
+function renderSummary(points, series) {
+  $("summary").replaceChildren(...series.map((s) => {
+    const values = points.filter((pt) => pt[s.key]).map((pt) => pt[s.key].p);
     const trend = describeTrend(values);
     const detail = !values.length ? "Not forecast yet"
       : !trend ? `${values.length} run${values.length === 1 ? "" : "s"} so far`
       : `${signedPts(trend.net)} over ${values.length} runs`;
-    return dayTile({ size: "large", label: `${name} ${dayMonth(day)}`, color, value: values.at(-1) ?? null, trend, detail });
+    return dayTile({ size: "large", label: dayLabel(s.day), color: s.color, value: values.at(-1) ?? null, trend, detail });
   }));
+}
+
+function renderLegend(series) {
+  $("legend").replaceChildren(
+    ...series.map((s) => el("span", {}, el("i", { style: `background: ${s.color}` }), s.label)),
+    el("span", {}, el("i", { class: "ref" }), "70% reference"));
 }
 
 function render() {
   const site = sites.find((s) => s.id === siteSel.value);
-  const sat = weekendSel.value;
+  const day = daySel.value;
   if (!site) return;
   syncURL();
-  const points = weekendHistory(rows, site.id, sat);
+  const series = seriesFor(day, compareSel.value || null);
+  const points = dayHistory(rows, site.id, day, compareSel.value || null);
   $("site-title").textContent = site.name;
   document.title = `${site.name} · Forecast timeline | Fly or Fold`;
   $("chart-sub").textContent = points.length
     ? `${points.length} run${points.length === 1 ? "" : "s"}, latest ${shortDate(points[points.length - 1].issued)}`
     : "";
-  renderSummary(points, sat);
+  renderSummary(points, series);
+  renderLegend(series);
 
   cleanup?.();
   const chart = $("chart");
   if (!points.length) {
     cleanup = null;
     chart.replaceChildren(el("div", { class: "empty" },
-      el("p", {}, sat > addDays(today, 13)
-        ? "This weekend is more than 14 days out, so no run covers it yet."
-        : "No runs cover this weekend at this site yet."),
+      el("p", {}, day > addDays(today, 13)
+        ? "This day is more than 14 days out, so no run covers it yet."
+        : "No runs cover this day at this site yet."),
       !isSample && !rows.length ? el("a", { href: "forecast.html?sample" }, "Preview with sample data") : null));
     $("table").replaceChildren();
     $("table-details").hidden = true;
   } else {
-    cleanup = renderTimeline(chart, points, sat);
-    $("table").replaceChildren(timelineTable(points, sat));
+    cleanup = renderTimeline(chart, points, series, today);
+    $("table").replaceChildren(timelineTable(points, series));
     $("table-details").hidden = false;
   }
-  renderStrip(site, sat);
+  renderStrip(site);
   $("rules").replaceChildren(siteCard(site, { distance: distanceLabel(getHome(), site) }));
 }
 
 async function init() {
-  const wantedWeekend = /^\d{4}-\d{2}-\d{2}$/.test(params.get("weekend") ?? "")
-    ? weekendSaturday(params.get("weekend")) : upcoming;
+  // ?weekend= is the old link format: open that day (its Saturday).
+  const asked = params.get("day") ?? params.get("weekend");
+  const wantedDay = isISODate(asked) ? asked : today;
+  const wantedCompare = isISODate(params.get("compare")) ? params.get("compare") : "";
   const months = new Set(monthsAround(today));
-  months.add(monthOf(addDays(wantedWeekend, -13)));
-  months.add(monthOf(addDays(wantedWeekend, 1)));
+  for (const d of [wantedDay, wantedCompare].filter(Boolean)) {
+    months.add(monthOf(addDays(d, -13)));
+    months.add(monthOf(d));
+  }
   [sites, rows] = await Promise.all([loadSites(), loadForecasts([...months].sort())]);
 
   const withData = new Set(rows.map((r) => r.site));
@@ -151,10 +146,12 @@ async function init() {
   siteSel.replaceChildren(...choices.map((s) => el("option", { value: s.id }, s.name)));
   const wantedSite = params.get("site");
   siteSel.value = choices.some((s) => s.id === wantedSite) ? wantedSite : choices[0]?.id ?? "";
-  fillWeekends(siteSel.value, wantedWeekend);
+  fillDays(wantedDay, wantedCompare ? [wantedCompare] : []);
+  fillCompare(wantedCompare);
 
-  siteSel.addEventListener("change", () => { fillWeekends(siteSel.value, weekendSel.value); render(); });
-  weekendSel.addEventListener("change", render);
+  siteSel.addEventListener("change", render);
+  daySel.addEventListener("change", () => pickDay(daySel.value));
+  compareSel.addEventListener("change", render);
   render();
 }
 

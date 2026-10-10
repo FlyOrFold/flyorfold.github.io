@@ -48,7 +48,7 @@ paint();
 document.getElementById("demo-dial").append(directionDial([[340, 20]]));
 
 document.getElementById("demo-tiles").append(
-  dayTile({ size: "large", label: "Saturday Oct 3", color: "var(--series-sat)", value: 0.94,
+  dayTile({ size: "large", label: "Wed, Oct 14", color: "var(--series-a)", value: 0.94,
     trend: { icon: "↗", word: "Rising" }, detail: "+52 pts over 13 runs" }),
-  dayTile({ size: "compact", label: "Sun Oct 4", color: "var(--series-sun)", value: 0.16,
+  dayTile({ size: "compact", label: "Today, Oct 10", color: "var(--series-a)", value: 0.16,
     spark: [0.29, 0.26, 0.29, 0.29, 0.26, 0.29, 0.23, 0.19, 0.19, 0.19, 0.16, 0.16], detail: "No change since last run" }));

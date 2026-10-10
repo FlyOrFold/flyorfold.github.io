@@ -1,7 +1,7 @@
 {
   "name": "Fly or Fold",
   "short_name": "Fly or Fold",
-  "description": "Paragliding weekend planner: how the chance of a flyable day changes as the weekend gets closer.",
+  "description": "Paragliding forecast planner: how the chance of a flyable day at each site changes with every daily forecast run.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f4f6f9",

@@ -28,17 +28,21 @@ scripts:
     <div class="map-legend" aria-hidden="true">
       <span><i class="pin-key active"></i>Forecast daily</span>
       <span><i class="pin-key"></i>Not forecast yet</span>
-      <span id="home-key" hidden><i class="pin-key home"></i><span id="home-key-label">You</span></span>
+      <span id="home-key" hidden><i class="pin-key home"></i>Starting point</span>
     </div>
     <div class="home-controls" id="home-controls">
       <span class="home-status" id="home-status">Set a starting point to see distances.</span>
       <div class="home-actions">
         <button type="button" class="btn small-btn" id="use-location">Use my location</button>
-        <label class="visually-hidden" for="preset">Or pick a city</label>
-        <select id="preset"><option value="">Or pick a city…</option></select>
+        <button type="button" class="btn secondary small-btn" id="pick-on-map" aria-pressed="false">Pick on map</button>
+        <form class="coords-form" id="coords-form">
+          <label class="visually-hidden" for="coords">Latitude and longitude</label>
+          <input type="text" id="coords" placeholder="Lat, lon: 40.1, -82.9" autocomplete="off" spellcheck="false">
+          <button type="submit" class="btn secondary small-btn">Set</button>
+        </form>
         <button type="button" class="link-btn" id="clear-home" hidden>Clear</button>
       </div>
-      <p class="small muted home-note">Stored only in this browser, rounded to about 10 km. Distances are straight-line, not driving.</p>
+      <p class="small muted home-note">Anywhere works: use your location, pick a point on the map, or type coordinates. Stored only in this browser, rounded to about 10 km, and never sent anywhere. Distances are straight-line, not driving.</p>
     </div>
   </section>
 

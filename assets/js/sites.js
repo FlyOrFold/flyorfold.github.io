@@ -2,7 +2,7 @@
 import { loadSites } from "./data.js";
 import { el } from "./common.js";
 import { siteCard, siteRow } from "./site-card.js";
-import { PRESETS, clearHome, distanceLabel, getHome, setPreset, useMyLocation } from "./location.js";
+import { clearHome, distanceLabel, getHome, parseCoords, setPoint, useMyLocation } from "./location.js";
 
 const $ = (id) => document.getElementById(id);
 let sites = [];
@@ -30,10 +30,15 @@ function focusSite(id) {
 
 // ---- Map (Leaflet, loaded with `defer` before this module runs) ----
 
-let map = null, homeMarker = null;
+let map = null, homeMarker = null, picking = false;
+const fromLatLng = (ll) => ({ lat: ll.lat, lon: ll.lng }); // Leaflet calls it lng
 
 function initMap() {
-  if (!window.L) { $("map").replaceChildren(el("p", { class: "empty" }, "The map could not be loaded.")); return; }
+  if (!window.L) {
+    $("map").replaceChildren(el("p", { class: "empty" }, "The map could not be loaded."));
+    $("pick-on-map").hidden = true;
+    return;
+  }
   const L = window.L;
   map = L.map("map", { scrollWheelZoom: false, zoomSnap: 0.5 });
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -46,11 +51,12 @@ function initMap() {
   for (const s of [...placed].sort((a, b) => Number(a.active) - Number(b.active))) {
     const m = L.circleMarker([s.lat, s.lon], {
       radius: s.active ? 8 : 6, weight: 2, className: s.active ? "pin pin-active" : "pin",
-      keyboard: true, title: s.name,
+      keyboard: true, title: s.name, bubblingMouseEvents: false,
     }).addTo(map);
     m.bindTooltip(el("span", {}, s.name), { direction: "top", offset: [0, -6] }); // DOM node, not an HTML string
-    m.on("click", () => focusSite(s.id));
+    m.on("click", () => (picking ? setPoint(fromLatLng(m.getLatLng())) : focusSite(s.id)));
   }
+  map.on("click", (e) => { if (picking) setPoint(fromLatLng(e.latlng.wrap())); });
   fit();
   drawHome();
 }
@@ -83,15 +89,28 @@ function renderHomeControls() {
     : "Set a starting point to see distances.";
   $("clear-home").hidden = !home;
   $("home-key").hidden = !home;
-  $("home-key-label").textContent = home ? (home.label === "your location" ? "You" : home.label) : "";
-  $("preset").value = home && PRESETS.some((p) => p.label === home.label) ? home.label : "";
+}
+
+/** "Pick on map" arms the next click on the map; Escape or a second press cancels. */
+function setPicking(on) {
+  picking = on && !!map;
+  const btn = $("pick-on-map");
+  btn.setAttribute("aria-pressed", String(picking));
+  btn.textContent = picking ? "Cancel" : "Pick on map";
+  $("map").classList.toggle("picking", picking);
+  if (picking) $("home-status").textContent = "Click or tap the map to set your starting point.";
+  else renderHomeControls();
 }
 
 function setupHomeControls() {
-  $("preset").append(...PRESETS.map((p) => el("option", { value: p.label }, p.label)));
-  $("preset").addEventListener("change", (e) => {
-    const p = PRESETS.find((x) => x.label === e.target.value);
-    if (p) setPreset(p);
+  $("pick-on-map").addEventListener("click", () => setPicking(!picking));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && picking) setPicking(false); });
+  $("coords-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const pt = parseCoords($("coords").value);
+    if (!pt) { $("home-status").textContent = "Type latitude then longitude, like 40.1, -82.9."; return; }
+    $("coords").value = "";
+    setPoint(pt);
   });
   $("use-location").addEventListener("click", async () => {
     const btn = $("use-location");
@@ -102,7 +121,7 @@ function setupHomeControls() {
     finally { btn.disabled = false; btn.textContent = "Use my location"; }
   });
   $("clear-home").addEventListener("click", clearHome);
-  document.addEventListener("homechange", () => { renderHomeControls(); renderLists(); drawHome(); });
+  document.addEventListener("homechange", () => { setPicking(false); renderLists(); drawHome(); });
   renderHomeControls();
 }
 

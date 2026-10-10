@@ -16,8 +16,8 @@
   /* Brand */
   --ink: #10233a;                                  /* deep navy: text and primary button (light) */
   --logo-blue: #245a96;                            /* logo tile; the logo SVG and icon PNGs use it directly */
-  --sky: light-dark(#2f7fd0, #4a90dc);             /* primary; Saturday series */
-  --canopy: light-dark(#e0662a, #de6a2c);          /* accent; Sunday series */
+  --sky: light-dark(#2f7fd0, #4a90dc);             /* primary; first chart series */
+  --canopy: light-dark(#e0662a, #de6a2c);          /* accent; compared-day series */
   --ridge: light-dark(#2e7d5b, #4fae84);           /* status: forecast daily */
   --caution: light-dark(#b7791f, #d9a441);         /* status: unverified */
 
@@ -37,8 +37,8 @@
   --on-accent: light-dark(#fff, #08111c);
 
   /* Chart */
-  --series-sat: var(--sky);
-  --series-sun: var(--canopy);
+  --series-a: var(--sky);      /* the charted day */
+  --series-b: var(--canopy);   /* the day it is compared with */
   --grid: light-dark(#e3e8ee, #1e2c3d);
   --ref: light-dark(#8a97a6, #6f7f91);
 
@@ -280,7 +280,7 @@ a.topic-chip:hover { border-color: var(--text-2); }
 /* Forms */
 .controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; margin: 8px 0 16px; }
 .field { display: grid; gap: 4px; font-size: .85rem; color: var(--text-2); min-width: 0; flex: 1 1 180px; }
-select {
+select, input[type="text"] {
   font: inherit; font-size: 1rem; color: var(--text); background: var(--surface);
   border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 10px; width: 100%;
 }
@@ -294,7 +294,7 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
 th.num { text-align: right; }
 details > summary { cursor: pointer; color: var(--link); font-size: .9rem; padding: 8px; }
 
-/* Day tile (day-tile.js): compact on the home outlook, large on the forecast summary */
+/* Day tile (day-tile.js): compact on the home cards, large on the forecast summary */
 .day-tile { background: var(--surface-2); border-radius: var(--radius-sm); }
 .day-tile .label { display: flex; align-items: center; gap: 6px; }
 .day-tile .key { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
@@ -339,12 +339,13 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
    Home page
    ========================================================================== */
 
-/* Weekend outlook cards (after .card: they override its background and padding) */
+/* Two-week outlook cards (after .card: they override its background and padding) */
 .outlook-card { background: var(--bg); border-color: transparent; padding: 14px; }
 .outlook-card h3 { margin-bottom: 2px; }
 .outlook-card h3 a { color: var(--text); text-decoration: none; }
 .outlook-card h3 a:hover { text-decoration: underline; }
-.days { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.outlook-card .day-tile { margin-top: 10px; }
+.outlook-card .cal { margin-top: 10px; }
 
 /* How it works */
 .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
@@ -386,28 +387,39 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .raised-panel .chart { margin: 0 -6px; }
 .raised-panel details > summary { padding: 8px 0; }
 
-/* 14-day calendar (Mon–Sun columns) */
+/* Two-week strip (day-strip.js): two rows of seven, starting three days before today.
+   Also on the home page (.cal.mini); it lives here because the forecast page is its full form. */
 .cal { display: grid; gap: 3px; }
 .cal-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
 .cal-dow { font-size: .72rem; color: var(--muted); text-align: center; padding-bottom: 2px; }
-.cal-dow.wknd { color: var(--text); font-weight: 700; }
 .cal-cell {
   border-radius: 8px; min-height: 52px; font-variant-numeric: tabular-nums;
   background: color-mix(in oklab, var(--sky) var(--share, 0%), var(--surface-2));
   display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2;
 }
 .cal-cell.blank { background: transparent; }
-.cal-cell > button {
+.cal-cell > button, .cal-cell > a {
   all: unset; box-sizing: border-box; width: 100%; height: 100%; min-height: 52px; border-radius: 8px; cursor: pointer;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-.cal-cell > button:hover { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--text) 35%, transparent); }
-.cal-cell > button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.cal-cell.selected { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--canopy); }
+.cal-cell > button:hover, .cal-cell > a:hover { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--text) 35%, transparent); }
+.cal-cell > button:focus-visible, .cal-cell > a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* Past days: hatched, because the value is the last forecast made, not what happened. */
+.cal-cell.past, .past-key {
+  background-image: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in srgb, var(--text) 14%, transparent) 5px 6px);
+}
+.cal-cell.today .cal-date { font-weight: 700; opacity: 1; }
+.cal-cell.selected { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text); }
+.cal-cell.compare { outline: 2px dashed var(--text); outline-offset: 2px; }
 .cal-date { font-size: .7rem; opacity: .8; }
 .cal-cell b { font-size: .95rem; }
+.cal.mini .cal-cell, .cal.mini .cal-cell > a { min-height: 40px; }
+.cal.mini .cal-date { font-size: .65rem; }
+.cal.mini .cal-cell b { font-size: .8rem; }
 .scale { display: flex; align-items: center; gap: 8px; font-size: .78rem; color: var(--muted); margin-top: 12px; flex-wrap: wrap; }
 .scale .ramp { height: 8px; flex: 0 1 140px; border-radius: 4px; }
+.scale-past { display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; }
+.past-key { width: 14px; height: 14px; border-radius: 3px; background-color: var(--surface-2); display: inline-block; }
 .scale-note { margin-left: auto; }
 
 /* ==========================================================================
@@ -483,7 +495,9 @@ details > summary { cursor: pointer; color: var(--link); font-size: .9rem; paddi
 .home-controls { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px; display: grid; gap: 8px; }
 .home-status { font-weight: 600; }
 .home-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.home-actions select { width: auto; flex: 0 1 220px; padding: 6px 10px; font-size: .9rem; }
+.coords-form { display: flex; gap: 6px; flex: 0 1 300px; min-width: 0; }
+.coords-form input { padding: 6px 10px; font-size: .9rem; min-width: 0; }
+.site-map.picking, .site-map.picking .leaflet-interactive { cursor: crosshair; }
 .home-note { margin: 0; }
 
 /* ==========================================================================

@@ -132,15 +132,23 @@ export function localToday() {
   return toISO(new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())));
 }
 
-/** The Saturday of the weekend containing `day`, or the next one if `day` is Mon–Fri. */
-export function weekendSaturday(day) {
-  const dow = toDate(day).getUTCDay(); // 0 Sun .. 6 Sat
-  if (dow === 6) return day;
-  if (dow === 0) return addDays(day, -1);
-  return addDays(day, 6 - dow);
+/** True for a real calendar date written "YYYY-MM-DD" (so "2026-02-30" is rejected). */
+export function isISODate(s) {
+  if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const d = toDate(s);
+  return !Number.isNaN(d.getTime()) && toISO(d) === s;
 }
 
-/** Months needed to cover every run (lead 0–13) for weekends near `today`, plus the previous month. */
+// The days the pages show: a few days back (their last forecast) and the rest ahead, 14 in all.
+export const DAYS_BEFORE = 3;
+export const DAYS_AFTER = 10;
+
+/** The 14 target days around `today`, oldest first: today − 3 through today + 10. */
+export function dayWindow(today) {
+  return Array.from({ length: DAYS_BEFORE + DAYS_AFTER + 1 }, (_, i) => addDays(today, i - DAYS_BEFORE));
+}
+
+/** Months needed to cover every run (lead 0–13) for the days around `today`, plus the previous month. */
 export function monthsAround(today) {
   const set = new Set([monthOf(addDays(today, -40)), monthOf(addDays(today, -14)), monthOf(today)]);
   return [...set].sort();
@@ -169,32 +177,32 @@ export function latestIssued(rows) {
 }
 
 /**
- * Per-run history for one site and weekend: one point per issued date, with
- * the Saturday and Sunday probabilities (either may be missing).
+ * Per-run history for one site and target day, plus an optional second day to compare:
+ * one point per issued date, with `a` (the day) and `b` (the compared day) rows, either may be missing.
  */
-export function weekendHistory(rows, siteId, saturday) {
-  const sunday = addDays(saturday, 1);
+export function dayHistory(rows, siteId, day, compare = null) {
   const byIssued = new Map();
   for (const r of rows) {
-    if (r.site !== siteId || (r.target !== saturday && r.target !== sunday)) continue;
-    const pt = byIssued.get(r.issued) ?? { issued: r.issued, sat: null, sun: null, version: r.version };
-    if (r.target === saturday) pt.sat = r; else pt.sun = r;
+    if (r.site !== siteId) continue;
+    const key = r.target === day ? "a" : compare && r.target === compare ? "b" : null;
+    if (!key) continue;
+    const pt = byIssued.get(r.issued) ?? { issued: r.issued, a: null, b: null, version: r.version };
+    pt[key] = r;
     pt.version = r.version;
     byIssued.set(r.issued, pt);
   }
   return [...byIssued.values()].sort((a, b) => (a.issued < b.issued ? -1 : 1));
 }
 
-/** Saturdays that have at least one forecast row for Saturday or Sunday at this site. */
-export function weekendsWithData(rows, siteId) {
-  const set = new Set();
+/** The newest forecast row for each target day at one site, as a Map of target date to row. */
+export function latestByTarget(rows, siteId) {
+  const out = new Map();
   for (const r of rows) {
-    if (siteId && r.site !== siteId) continue;
-    const dow = toDate(r.target).getUTCDay();
-    if (dow === 6) set.add(r.target);
-    else if (dow === 0) set.add(addDays(r.target, -1));
+    if (r.site !== siteId) continue;
+    const cur = out.get(r.target);
+    if (!cur || r.issued > cur.issued) out.set(r.target, r);
   }
-  return [...set].sort();
+  return out;
 }
 
 /**

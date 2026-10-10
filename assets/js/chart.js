@@ -1,14 +1,18 @@
-// Timeline chart: how the forecast for one weekend changed run by run. Plain SVG, no dependencies.
+// Timeline chart: how the forecast for one day (and optionally a second, compared day) changed
+// run by run. Plain SVG, no dependencies.
 import { addDays, daysBetween, dayMonth, pct, shortDate, weekdayShort } from "./data.js";
 import { el } from "./common.js";
 import { svgEl } from "./svg.js";
 
 const REF = 0.7;
 
-const SERIES = [
-  { key: "sat", label: "Saturday", short: "Sat", color: "var(--series-sat)" },
-  { key: "sun", label: "Sunday", short: "Sun", color: "var(--series-sun)" },
-];
+/** The chart's series for a day and an optional compared day: Sky first, Canopy second. */
+export function seriesFor(day, compare = null) {
+  return [
+    { key: "a", day, label: shortDate(day), short: weekdayShort(day), color: "var(--series-a)" },
+    compare ? { key: "b", day: compare, label: shortDate(compare), short: weekdayShort(compare), color: "var(--series-b)" } : null,
+  ].filter(Boolean);
+}
 
 /**
  * Split one series into connected runs. A line breaks where a run is missing
@@ -32,15 +36,16 @@ export function segments(points, key) {
 }
 
 /**
- * Render into `container`. `points` come from weekendHistory(); `saturday` is the target weekend.
- * Returns a cleanup function.
+ * Render into `container`. `points` come from dayHistory(); `series` from seriesFor().
+ * The x axis runs from 13 days before the earliest target to the latest one, so a day still
+ * ahead shows how many runs are still to come. Returns a cleanup function.
  */
-export function renderTimeline(container, points, saturday) {
+export function renderTimeline(container, points, series, today) {
   container.replaceChildren();
-  const sunday = addDays(saturday, 1);
-  const first = points.length ? points[0].issued : addDays(saturday, -13);
-  const start = first < addDays(saturday, -13) ? first : addDays(saturday, -13);
-  const end = sunday;
+  const days = series.map((s) => s.day).sort();
+  const first = points.length ? points[0].issued : addDays(days[0], -13);
+  const start = first < addDays(days[0], -13) ? first : addDays(days[0], -13);
+  const end = days.at(-1);
   const span = Math.max(1, daysBetween(start, end));
 
   const wrap = el("div", { class: "chart" });
@@ -62,19 +67,28 @@ export function renderTimeline(container, points, saturday) {
     svg?.remove();
     svg = svgEl("svg", {
       viewBox: `0 0 ${W} ${H}`, width: W, height: H, tabindex: 0, role: "img",
-      "aria-label": `Chance of a flyable day for Saturday ${dayMonth(saturday)} and Sunday ${dayMonth(sunday)}, by forecast run. Use left and right arrow keys to step through runs.`,
+      "aria-label": `Chance of a flyable day for ${series.map((s) => s.label).join(" and ")}, by forecast run. Use left and right arrow keys to step through runs.`,
     });
     wrap.prepend(svg);
 
-    // Weekend band: the target days themselves.
-    const bx = x(saturday) - (iw / span) / 2;
-    svg.append(svgEl("rect", {
-      x: Math.max(m.l, bx), y: m.t, width: m.l + iw - Math.max(m.l, bx) + 0.5, height: ih,
-      style: "fill: var(--surface-2)",
-    }));
-    const wkLabel = svgEl("text", { x: m.l + iw, y: m.t - 8, "text-anchor": "end", style: "fill: var(--muted); font-size: 11px" });
-    wkLabel.textContent = "Weekend";
-    svg.append(wkLabel);
+    // Target-day bands, tinted with their series colour.
+    const dayW = iw / span;
+    for (const s of series) {
+      const bx = Math.max(m.l, x(s.day) - dayW / 2);
+      svg.append(svgEl("rect", {
+        x: bx, y: m.t, width: Math.min(m.l + iw, x(s.day) + dayW / 2) - bx, height: ih,
+        style: `fill: color-mix(in srgb, ${s.color} 14%, transparent)`,
+      }));
+    }
+    // Band labels, only when they have room (otherwise the legend carries them).
+    const bandXs = series.map((s) => x(s.day));
+    if (bandXs.length < 2 || Math.abs(bandXs[0] - bandXs[1]) >= 46) {
+      for (const s of series) {
+        const t = svgEl("text", { x: x(s.day), y: m.t - 8, "text-anchor": "middle", style: "fill: var(--muted); font-size: 11px" });
+        t.textContent = dayMonth(s.day);
+        svg.append(t);
+      }
+    }
 
     // Y grid and ticks.
     for (let v = 0; v <= 1.0001; v += 0.2) {
@@ -101,10 +115,13 @@ export function renderTimeline(container, points, saturday) {
       const xx = x(iso);
       svg.append(svgEl("line", { x1: xx, x2: xx, y1: m.t + ih, y2: m.t + ih + 4, style: "stroke: var(--line)" }));
       const back = daysBetween(iso, end);
-      if (back % every !== 0) continue;
-      const t1 = svgEl("text", { x: xx, y: m.t + ih + 17, "text-anchor": "middle", style: "fill: var(--muted); font-size: 11px" });
-      t1.textContent = weekdayShort(iso);
-      const t2 = svgEl("text", { x: xx, y: m.t + ih + 30, "text-anchor": "middle", style: "fill: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums" });
+      if (back % every !== 0 && iso !== today) continue;
+      // Today's run is the newest there can be: label it so the empty days after it read as "not yet".
+      const isToday = iso === today;
+      const ink = isToday ? "fill: var(--text); font-weight: 700" : "fill: var(--muted)";
+      const t1 = svgEl("text", { x: xx, y: m.t + ih + 17, "text-anchor": "middle", style: `${ink}; font-size: 11px` });
+      t1.textContent = isToday ? "Today" : weekdayShort(iso);
+      const t2 = svgEl("text", { x: xx, y: m.t + ih + 30, "text-anchor": "middle", style: `${ink}; font-size: 10px; font-variant-numeric: tabular-nums` });
       t2.textContent = iso.slice(8).replace(/^0/, "");
       svg.append(t1, t2);
     }
@@ -126,7 +143,7 @@ export function renderTimeline(container, points, saturday) {
 
     // Lines and markers.
     const ends = [];
-    for (const s of SERIES) {
+    for (const s of series) {
       for (const seg of segments(points, s.key)) {
         if (seg.length > 1) {
           const d = seg.map((pt, i) => `${i ? "L" : "M"}${x(pt.issued).toFixed(1)},${y(pt[s.key].p).toFixed(1)}`).join("");
@@ -163,15 +180,12 @@ export function renderTimeline(container, points, saturday) {
       const pt = points[i];
       cross.setAttribute("x1", xs[i]); cross.setAttribute("x2", xs[i]);
       cross.setAttribute("visibility", "visible");
-      const before = daysBetween(pt.issued, saturday);
-      const when = before > 0 ? `${before} day${before === 1 ? "" : "s"} before Saturday`
-        : before === 0 ? "on Saturday" : "on Sunday";
-      tip.replaceChildren(el("div", { class: "tt-head" }, `Run of ${shortDate(pt.issued)} · ${when}`));
-      for (const s of SERIES) {
+      tip.replaceChildren(el("div", { class: "tt-head" }, `Run of ${shortDate(pt.issued)}`));
+      for (const s of series) {
         const r = pt[s.key];
         tip.append(el("div", { class: "tt-row" },
           el("i", { style: `background: ${s.color}` }), el("b", {}, r ? pct(r.p) : "–"),
-          el("span", {}, `${s.label}${r ? ` · ${r.n} members` : " · no forecast"}`)));
+          el("span", {}, `${s.label} · ${r ? `${leadWords(daysBetween(pt.issued, s.day))} · ${r.n} members` : "no forecast"}`)));
       }
       tip.hidden = false;
       const scale = wrap.clientWidth / W;
@@ -179,7 +193,7 @@ export function renderTimeline(container, points, saturday) {
       const tw = tip.offsetWidth;
       tip.style.left = `${Math.min(Math.max(0, left + 12 + tw > wrap.clientWidth ? left - tw - 12 : left + 12), Math.max(0, wrap.clientWidth - tw))}px`;
       // Keep the tooltip off the marks it describes: top of the plot, or bottom when they sit high.
-      const highest = Math.min(...SERIES.map((s) => (pt[s.key] ? y(pt[s.key].p) : Infinity)));
+      const highest = Math.min(...series.map((s) => (pt[s.key] ? y(pt[s.key].p) : Infinity)));
       tip.style.top = highest < m.t + ih / 2
         ? `${Math.max(0, (m.t + ih) * scale - tip.offsetHeight - 4)}px`
         : `${m.t * scale}px`;
@@ -211,21 +225,26 @@ export function renderTimeline(container, points, saturday) {
   return () => ro.disconnect();
 }
 
+/** "5 days before", "1 day before", "same day". */
+export function leadWords(lead) {
+  return lead === 0 ? "same day" : `${lead} day${lead === 1 ? "" : "s"} before`;
+}
+
 /** Data table equivalent of the chart, for screen readers and anyone who prefers numbers. */
-export function timelineTable(points, saturday) {
+export function timelineTable(points, series) {
   const tbody = el("tbody");
   for (const pt of points) {
     tbody.append(el("tr", {},
       el("td", {}, shortDate(pt.issued)),
-      el("td", { class: "num" }, String(daysBetween(pt.issued, saturday))),
-      el("td", { class: "num" }, pt.sat ? pct(pt.sat.p) : "–"),
-      el("td", { class: "num" }, pt.sun ? pct(pt.sun.p) : "–"),
+      ...series.flatMap((s) => [
+        el("td", { class: "num" }, pt[s.key] ? pct(pt[s.key].p) : "–"),
+        el("td", { class: "num" }, String(daysBetween(pt.issued, s.day)))]),
       el("td", { class: "num" }, String(pt.version))));
   }
   return el("div", { class: "table-wrap" }, el("table", {},
     el("thead", {}, el("tr", {},
-      el("th", {}, "Run"), el("th", { class: "num" }, "Days before Sat"),
-      el("th", { class: "num" }, "Saturday"), el("th", { class: "num" }, "Sunday"),
+      el("th", {}, "Run"),
+      ...series.flatMap((s) => [el("th", { class: "num" }, s.label), el("th", { class: "num" }, "Days before")]),
       el("th", { class: "num" }, "Criteria version"))),
     tbody));
 }

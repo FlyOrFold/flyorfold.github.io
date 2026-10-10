@@ -1,14 +1,15 @@
 # CLAUDE.md
 
-Static GitHub Pages site for the flyorfold paragliding weekend planner. Drafted from a planning
+Static GitHub Pages site for the flyorfold paragliding forecast planner. Drafted from a planning
 conversation, so anything marked **TODO** needs the repo owner's input. Read the existing repo
 structure before changing anything, and follow whatever conventions it already uses.
 
 ## What this project is
 
-A tool to help an intermediate (USHPA P3) paraglider pilot in central Ohio decide whether a weekend
-flying trip is worth the drive. Pilots here fly two or three times a year and drive up to six hours,
-so a wrong call costs gas and a hotel night.
+A tool to help an intermediate (USHPA P3) paraglider pilot decide whether a flying trip on a given
+day is worth it. Any day counts, not just weekends (pilots on vacation or retired fly midweek), and
+the site makes no assumption about where the viewer lives. Site text must not mention weekends or a
+home region.
 
 This repo holds only the front end. The backend is the public repo
 [FlyOrFold/forecast-log](https://github.com/FlyOrFold/forecast-log) (sibling checkout `../forecast-log`):
@@ -20,20 +21,28 @@ This repo holds only the front end. The backend is the public repo
   unless the backend adds them.
 
 An earlier plan (Cloud Run, Firestore `forecast_runs`, Saturday-afternoon/Sunday-morning windows and a
-"both windows" probability) was replaced by forecast-log. Ignore any reference to it.
+"both windows" probability) was replaced by forecast-log. Ignore any reference to it. A later version
+was built around weekends (Saturday/Sunday series, weekend selector); that was replaced by the
+any-day design below.
 
 ## Forecast timeline (built: `forecast.html`)
 
-For one site and one weekend, show how the chance of a flyable Saturday and of a flyable Sunday
-changed run by run as the weekend got closer. The point is to show whether a forecast is firming up
-or flipping, so the pilot can decide when to commit to a trip.
+For one site and one target day, show how the chance of a flyable day changed run by run as the day
+got closer. The point is to show whether a forecast is firming up or flipping, so the pilot can decide
+when to commit to a trip.
 
-- X axis: issued date of each run. Y axis: 0 to 100%. One line for Saturday, one for Sunday.
+- X axis: issued date of each run, from 13 days before the target to the target. Y axis: 0 to 100%.
+  One line for the chosen day (`--series-a`, Sky) and, optionally, one for a compared day
+  (`--series-b`, Canopy). Today is labelled on the axis so the runs still to come read as "not yet".
 - Lines break across a missing run or a `criteria_version` change (probabilities are not comparable).
 - A dashed 70% reference line. There are no alerts to mark.
-- Selectors for site and weekend, defaulting to the weekend containing today or the next one.
-- The chance that **both** days are flyable is not in the data (it needs per-member results), so
-  never compute it from the two daily numbers. The page says so.
+- Selectors for site, day and "compare with"; URL `?site=<id>&day=YYYY-MM-DD&compare=YYYY-MM-DD`
+  (an old `?weekend=` link opens that day). The day defaults to today.
+- The two-week strip (`day-strip.js`, also on the home page) shows each day's newest forecast for
+  the window `dayWindow()` in `data.js`: today − 3 to today + 10. Past days are hatched and labelled
+  as their last forecast, never as what happened.
+- The chance that **both** a day and its compared day are flyable is not in the data (it needs
+  per-member results), so never compute it from the two daily numbers. The page says so.
 - Mobile first, light and dark themes.
 - Later: overlay what actually happened, once forecast-log writes `data/outcomes/`.
 
@@ -97,7 +106,7 @@ any write-capable credential in this repo.
 - Forecast data is fetched client-side by plain ES modules in `assets/js/` (no bundler).
   `boot.js` is the only module with startup side effects (theme, sample badge); the layout loads it
   on every page. Keep the others importable in Node: no top-level `document`/`location` access.
-  Shared pieces: `svg.js` (SVG element helper), `day-tile.js` (Saturday/Sunday tiles and sparkline),
+  Shared pieces: `svg.js` (SVG element helper), `day-tile.js` (day tiles and sparkline), `day-strip.js` (two-week strip),
   `signedPts()` in `data.js` for "+3 pts" / "−3 pts" (true minus).
 - Tests: `node --test tests/` (Node's built-in runner, no packages). Add a test when changing
   parsing, dates, trend words, chart segmentation or distances.
@@ -123,5 +132,7 @@ any write-capable credential in this repo.
   themes; re-validate if they change.
 - The Sites map uses Leaflet 1.9.4 from cdnjs with SRI hashes, and OpenStreetMap tiles (credit
   line required). It is the only third-party script; keep the integrity hashes if you upgrade it.
-- A viewer can set a starting point for distances (`assets/js/location.js`). It lives only in
-  that browser's localStorage, rounded to 0.1°, and must never go into a URL, a request, or the repo.
+- A viewer can set a starting point for distances (`assets/js/location.js`) anywhere in the world:
+  browser geolocation, a pick on the Sites map, or typed coordinates. It lives only in that browser's
+  localStorage, rounded to 0.1°, and must never go into a URL, a request, or the repo. That is why
+  there is no place-name search: it would send the typed text to a geocoding service.

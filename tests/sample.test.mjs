@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { sampleRows } from "../assets/js/sample.js";
-import { addDays, daysBetween, weekendSaturday, weekendHistory } from "../assets/js/data.js";
+import { addDays, dayHistory, dayWindow, daysBetween } from "../assets/js/data.js";
 
 const SITES = ["lake-erie-cleveland", "tennessee-cliff", "canaan-valley"];
 const TODAY = "2026-10-02";
@@ -38,14 +38,16 @@ test("past runs never change as days go by, like the real append-only log", () =
   }
 });
 
-test("whatever the date, this weekend has runs for every site", () => {
+test("whatever the date, every day in the window has runs for every site", () => {
   for (const today of ["2026-10-02", "2026-12-31", "2027-03-14", "2027-07-04"]) {
-    const sat = weekendSaturday(today);
     const rows = sampleRows(SITES, today);
     for (const site of SITES) {
-      const h = weekendHistory(rows, site, sat);
-      assert.ok(h.length >= 8, `${today} ${site}: ${h.length} runs`);
-      assert.ok(h.some((pt) => pt.sat) && h.some((pt) => pt.sun), `${today} ${site}`);
+      for (const day of dayWindow(today)) {
+        const h = dayHistory(rows, site, day);
+        // Up to today's run: a full 14 for past days and today, fewer the further ahead.
+        const expected = Math.min(14, 14 - daysBetween(today, day));
+        assert.equal(h.length, expected, `${today} ${site} ${day}`);
+      }
     }
   }
 });

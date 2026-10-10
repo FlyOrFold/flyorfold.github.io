@@ -2,8 +2,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  parseCSV, parseDirRanges, addDays, daysBetween, weekendSaturday, monthsAround, latestIssued,
-  weekendHistory, weekendsWithData, describeTrend, pct, signedPts, loadSites, loadForecasts,
+  parseCSV, parseDirRanges, addDays, daysBetween, isISODate, dayWindow, monthsAround, latestIssued,
+  dayHistory, latestByTarget, describeTrend, pct, signedPts, loadSites, loadForecasts,
 } from "../assets/js/data.js";
 
 test("parseCSV: quoted commas, doubled quotes, CRLF, blank lines, trimmed headers", () => {
@@ -38,20 +38,33 @@ test("date helpers cross month and year ends", () => {
   assert.equal(daysBetween("2026-10-31", "2026-11-02"), 2);
 });
 
-test("weekendSaturday: Mon–Fri give the coming Saturday, Sat and Sun give this one", () => {
-  const expected = {
-    "2026-09-28": "2026-10-03", // Mon
-    "2026-10-02": "2026-10-03", // Fri
-    "2026-10-03": "2026-10-03", // Sat
-    "2026-10-04": "2026-10-03", // Sun
-    "2026-10-05": "2026-10-10", // Mon
-  };
-  for (const [day, sat] of Object.entries(expected)) assert.equal(weekendSaturday(day), sat, day);
+test("isISODate: only real YYYY-MM-DD dates", () => {
+  assert.ok(isISODate("2026-10-10"));
+  assert.ok(isISODate("2028-02-29"));
+  for (const bad of ["2026-02-30", "2026-13-01", "2026-1-5", "20261010", "", null, undefined, "2026-10-10x"]) {
+    assert.equal(isISODate(bad), false, String(bad));
+  }
+});
+
+test("dayWindow: 14 days from 3 days back to 10 ahead, across a month end", () => {
+  const w = dayWindow("2026-10-30");
+  assert.equal(w.length, 14);
+  assert.equal(w[0], "2026-10-27");
+  assert.equal(w[3], "2026-10-30");
+  assert.equal(w.at(-1), "2026-11-09");
+  assert.ok(w.every((d, i) => i === 0 || daysBetween(w[i - 1], d) === 1));
 });
 
 test("monthsAround covers the 14-day lead window and the year boundary", () => {
   assert.deepEqual(monthsAround("2026-10-02"), ["2026-08", "2026-09", "2026-10"]);
   assert.deepEqual(monthsAround("2027-01-05"), ["2026-11", "2026-12", "2027-01"]);
+});
+
+test("monthsAround includes every run for the oldest day in the window", () => {
+  for (const today of ["2026-10-01", "2026-10-16", "2027-03-01", "2027-01-02"]) {
+    const oldestRun = addDays(dayWindow(today)[0], -13);
+    assert.ok(monthsAround(today).includes(oldestRun.slice(0, 7)), today);
+  }
 });
 
 const row = (issued, site, target, p, version = 1) => ({ issued, site, target, p, n: 31, version });
@@ -61,25 +74,36 @@ test("latestIssued", () => {
   assert.equal(latestIssued([row("2026-09-30", "a", "2026-10-03", 0.1), row("2026-10-02", "a", "2026-10-03", 0.2)]), "2026-10-02");
 });
 
-test("weekendHistory: one point per run, Sat and Sun merged, other sites and days ignored, sorted", () => {
-  const rows = [
-    row("2026-10-01", "a", "2026-10-04", 0.4),
-    row("2026-09-30", "a", "2026-10-03", 0.1),
-    row("2026-10-01", "a", "2026-10-03", 0.2),
-    row("2026-10-01", "b", "2026-10-03", 0.9),
-    row("2026-10-01", "a", "2026-10-05", 0.9),
-  ];
-  const h = weekendHistory(rows, "a", "2026-10-03");
-  assert.deepEqual(h.map((pt) => [pt.issued, pt.sat?.p ?? null, pt.sun?.p ?? null]), [
+const historyRows = [
+  row("2026-10-01", "a", "2026-10-07", 0.4),
+  row("2026-09-30", "a", "2026-10-03", 0.1),
+  row("2026-10-01", "a", "2026-10-03", 0.2),
+  row("2026-10-01", "b", "2026-10-03", 0.9),
+  row("2026-10-01", "a", "2026-10-05", 0.9),
+];
+
+test("dayHistory: one point per run for the day; other sites and days ignored; sorted", () => {
+  const h = dayHistory(historyRows, "a", "2026-10-03");
+  assert.deepEqual(h.map((pt) => [pt.issued, pt.a?.p ?? null, pt.b]), [
     ["2026-09-30", 0.1, null],
-    ["2026-10-01", 0.2, 0.4],
+    ["2026-10-01", 0.2, null],
   ]);
 });
 
-test("weekendsWithData maps both Saturday and Sunday targets to their Saturday", () => {
-  const rows = [row("2026-10-01", "a", "2026-10-04", 0.4), row("2026-10-01", "a", "2026-10-10", 0.4), row("2026-10-01", "a", "2026-10-07", 0.4)];
-  assert.deepEqual(weekendsWithData(rows, "a"), ["2026-10-03", "2026-10-10"]);
-  assert.deepEqual(weekendsWithData(rows, "other"), []);
+test("dayHistory with a compared day merges both by run, either side may be missing", () => {
+  const h = dayHistory(historyRows, "a", "2026-10-03", "2026-10-07");
+  assert.deepEqual(h.map((pt) => [pt.issued, pt.a?.p ?? null, pt.b?.p ?? null]), [
+    ["2026-09-30", 0.1, null],
+    ["2026-10-01", 0.2, 0.4],
+  ]);
+  assert.deepEqual(dayHistory(historyRows, "a", "2026-11-01"), []);
+});
+
+test("latestByTarget keeps the newest run for each day at one site", () => {
+  const m = latestByTarget(historyRows, "a");
+  assert.deepEqual([...m.keys()].sort(), ["2026-10-03", "2026-10-05", "2026-10-07"]);
+  assert.equal(m.get("2026-10-03").p, 0.2);
+  assert.equal(latestByTarget(historyRows, "none").size, 0);
 });
 
 test("describeTrend: needs three runs; Rising, Falling, Steady, Unsettled", () => {

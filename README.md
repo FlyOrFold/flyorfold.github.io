@@ -1,7 +1,7 @@
 # flyorfold.github.io
 
-The Fly or Fold website: a paragliding weekend planner that shows how the chance of a flyable day
-at each site changes run by run as the weekend gets closer.
+The Fly or Fold website: a paragliding forecast planner that shows how the chance of a flyable day
+at each site changes run by run as the day gets closer.
 
 A GitHub Pages Jekyll site (the `github-pages` gem: Jekyll 3 plus GitHub's allowed plugins
 `jekyll-feed`, `jekyll-seo-tag` and `jekyll-sitemap`). GitHub builds it on every push to `main`.
@@ -12,9 +12,9 @@ modules in `assets/js/` that run in the browser.
 
 | Page | What it shows |
 |---|---|
-| `index.html` | Landing page: this weekend's outlook per site from the latest run, how it works, latest news |
-| `forecast.html` | Timeline for one site and weekend (`?site=<id>&weekend=YYYY-MM-DD`), the 14-day outlook, and the site's limits |
-| `sites.html` | Every row of the site list, with limits, sources and whether it is forecast |
+| `index.html` | Landing page: a today tile and a two-week strip per site (3 days back, 10 ahead) of each day's newest forecast, how it works, latest news |
+| `forecast.html` | Timeline for one site and day, optionally compared with a second day (`?site=<id>&day=YYYY-MM-DD&compare=YYYY-MM-DD`), the two-week strip, and the site's limits |
+| `sites.html` | Every row of the site list, with limits, sources and whether it is forecast; set a starting point (your location, a map pick or typed coordinates) for distances |
 | `news.html` | All news items (posts), with an RSS feed at `/news/feed.xml` |
 | `brand.html` | Logo, color tokens, type and voice rules |
 
@@ -33,7 +33,7 @@ Raw files are cached for about 5 minutes, so a new run can take a few minutes to
 
 Add `?sample` to any URL (for example `forecast.html?sample`) to see the pages with made-up data:
 the site list in `sample/sites.csv` and forecasts generated in the browser by `assets/js/sample.js`,
-relative to today, so this weekend always has runs. Past runs never change from day to day, like
+relative to today, so every day on the pages has runs. Past runs never change from day to day, like
 the real log. Every page shows a **Sample data** badge while it's on.
 
 ## Running locally
@@ -58,8 +58,8 @@ LANG=en_US.UTF-8 bundle exec jekyll serve --livereload
 
 ## Tests
 
-The pure logic (CSV parsing, dates, weekend history, trend words, line breaks in the chart,
-distances) has tests that use Node's built-in runner, with no packages to install:
+The pure logic (CSV parsing, dates, day history, trend words, line breaks in the chart,
+distances, typed coordinates) has tests that use Node's built-in runner, with no packages to install:
 
 ```bash
 node --test tests/

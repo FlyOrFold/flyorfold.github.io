@@ -1,7 +1,7 @@
 # Fly or Fold — GitHub Pages (github-pages gem: Jekyll 3 + the GitHub-whitelisted plugins).
 title: Fly or Fold
 description: >-
-  Paragliding weekend planner: how the chance of a flyable day changes as the weekend gets closer.
+  Paragliding forecast planner: how the chance of a flyable day at each site changes with every daily forecast run.
 url: https://flyorfold.com
 baseurl: ""
 lang: en

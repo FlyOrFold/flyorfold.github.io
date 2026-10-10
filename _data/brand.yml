@@ -4,8 +4,8 @@
   tokens:
     - { token: --logo-blue, name: Logo blue, use: "Logo tile. Same in both themes; baked into logo.svg and the icon PNGs" }
     - { token: --ink, name: Ink, use: "Primary button and text in light mode; ink for the navy one-colour mark" }
-    - { token: --sky, name: Sky, use: "Primary color. Saturday series, forecast-daily pins" }
-    - { token: --canopy, name: Canopy, use: "Accent. Sunday series, glider, timeline dots, step numbers" }
+    - { token: --sky, name: Sky, use: "Primary color. Charted-day series, forecast-daily pins, strip shading" }
+    - { token: --canopy, name: Canopy, use: "Accent. Compared-day series, glider, timeline dots, step numbers" }
     - { token: --ridge, name: Ridge, use: "Status: forecast daily. Never a chart series" }
     - { token: --caution, name: Caution, use: "Status: unverified. Never a chart series" }
 - group: Sky scene
@@ -27,7 +27,7 @@
     - { token: --link, name: Link, use: "Links" }
 - group: Charts
   tokens:
-    - { token: --series-sat, name: Saturday, use: "Saturday line, tile key and sparkline (= Sky)" }
-    - { token: --series-sun, name: Sunday, use: "Sunday line, tile key and sparkline (= Canopy)" }
+    - { token: --series-a, name: Charted day, use: "The charted day's line, band and tile key (= Sky)" }
+    - { token: --series-b, name: Compared day, use: "The compared day's line, band and tile key (= Canopy)" }
     - { token: --grid, name: Grid, use: "Chart gridlines" }
     - { token: --ref, name: Reference, use: "70% reference line" }
