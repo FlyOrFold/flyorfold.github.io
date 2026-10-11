@@ -12,7 +12,7 @@ scripts:
     <h1>Fly <span class="or-light">or</span> Fold</h1>
     <p class="lede">The mark, colors, sky scene, type, components and voice. Colors and components on this page are the live ones, so it can't drift from the site.</p>
     <nav class="brand-toc" aria-label="On this page">
-      <a href="#mark">Mark</a><a href="#color">Color</a><a href="#sky">Sky scene</a><a href="#type">Type</a><a href="#components">Components</a><a href="#voice">Voice</a>
+      <a href="#mark">Mark</a><a href="#color">Color</a><a href="#sky">Sky scene</a><a href="#type">Type</a><a href="#components">Components</a><a href="#voice">Voice</a><a href="#tools">Tools</a>
     </nav>
   </div>
   {% include ridge.html %}
@@ -163,5 +163,13 @@ scripts:
       <div class="card"><h3>Don't say</h3><ul><li>“Safe to fly”, “go/no-go”, “green light”</li><li>“Flyability score”</li><li>Opinions or reviews of schools and operators</li><li>A wind limit with no source</li></ul></div>
     </div>
     <p class="small muted">A planning aid, not a go signal. The pilot makes the call on site.</p>
+  </section>
+
+  <section id="tools" aria-labelledby="tools-h">
+    <h2 id="tools-h">Tools</h2>
+    <div class="card">
+      <h3><a href="{{ '/site-editor/' | relative_url }}">Site editor</a></h3>
+      <p class="muted">Edit forecast-log's <code>sites.csv</code> with a form, then export it to commit. Installs as an app; the data stays on your device. Source: <a class="ext" href="https://github.com/FlyOrFold/site-editor" target="_blank" rel="noopener">FlyOrFold/site-editor</a>.</p>
+    </div>
   </section>
 </main>
